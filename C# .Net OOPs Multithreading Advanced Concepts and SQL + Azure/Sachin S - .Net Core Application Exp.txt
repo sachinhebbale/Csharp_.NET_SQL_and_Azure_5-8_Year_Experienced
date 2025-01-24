@@ -1,6 +1,0 @@
-.Net Core Application
-● Developed backend APIs for a marketplace application, enabling the creation of campaign and advertisement requests at the buyer end; Tested APIs with Swagger and implemented data binding using AutoMapper
-● Established a Test Framework using MSUnit, Mocked data with Moq, and generated test data with AutoFixture, incorporating FluentAssertions for validation
-● Integrated SonarQube for code quality analysis and maintained data relationships using Entity Framework Core 5.0 and PostgreSQL
-● Utilized FluentMigrators for database schema management, and Fluent Validators for input validation
-● Implemented logging using Log4Net and GCP Logging for monitoring and debugging the application
