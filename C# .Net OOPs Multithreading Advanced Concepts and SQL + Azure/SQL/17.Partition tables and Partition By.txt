@@ -1,0 +1,70 @@
+In MS SQL Server, **partitioning** refers to dividing large tables into smaller, more manageable pieces while still maintaining the abstraction of a single table. It helps optimize performance by allowing SQL Server to process smaller chunks of data more efficiently during queries.
+
+There are two main concepts related to partitioning:
+
+1. **Partitioned Tables** (using partition functions and schemes)
+2. **Window Functions with PARTITION BY** (used in conjunction with ranking or aggregate functions)
+
+### 1. **Partitioned Tables**
+Partitioned tables in SQL Server allow you to store portions of a large table across multiple filegroups. This is helpful when dealing with massive datasets as it improves query performance and management.
+
+#### Steps to create a partitioned table:
+
+1. **Create a Partition Function**  
+   A partition function defines how SQL Server will divide the data.
+   
+   ```sql
+   CREATE PARTITION FUNCTION myPartitionFunction (INT)
+   AS RANGE LEFT FOR VALUES (100, 200, 300);
+   ```
+
+   Here, data will be partitioned into 4 partitions: 
+   - Partition 1: Values less than or equal to 100
+   - Partition 2: Values between 101 and 200
+   - Partition 3: Values between 201 and 300
+   - Partition 4: Values greater than 300
+
+2. **Create a Partition Scheme**  
+   The partition scheme defines where (on which filegroups) the partitions will be stored.
+
+   ```sql
+   CREATE PARTITION SCHEME myPartitionScheme
+   AS PARTITION myPartitionFunction
+   TO (filegroup1, filegroup2, filegroup3, filegroup4);
+   ```
+
+3. **Create a Partitioned Table**  
+   Now you can create a table that uses this partition scheme.
+
+   ```sql
+   CREATE TABLE Orders
+   (
+       OrderID INT PRIMARY KEY,
+       OrderAmount DECIMAL(10, 2),
+       OrderDate DATE
+   ) ON myPartitionScheme(OrderID);
+   ```
+
+When you query or update a partitioned table, SQL Server will automatically use the correct partition based on the `OrderID` in this case.
+
+### 2. **Partitioning with Window Functions**
+The `PARTITION BY` clause is used in window functions (such as `ROW_NUMBER()`, `RANK()`, `SUM()`, etc.) to divide the result set into partitions before performing calculations.
+
+#### Example:
+Consider an `Orders` table with `CustomerID` and `OrderAmount`. To calculate a running total of orders per customer, you can use `PARTITION BY`:
+
+```sql
+SELECT CustomerID, OrderID, OrderAmount,
+       SUM(OrderAmount) OVER (PARTITION BY CustomerID ORDER BY OrderID) AS RunningTotal
+FROM Orders;
+```
+
+In this example:
+- The `PARTITION BY CustomerID` clause divides the result set into partitions (one per customer).
+- The `SUM(OrderAmount)` is calculated separately for each customer, ordered by `OrderID`.
+
+### Key Points:
+- **Partitioned Tables** help manage large datasets and improve query performance by dividing the data into chunks stored across different filegroups.
+- **PARTITION BY** in window functions allows you to perform calculations over subsets (partitions) of the data within a single result set.
+
+Each approach has its specific use cases, with partitioned tables being used for data storage and window functions being used for query result calculations.

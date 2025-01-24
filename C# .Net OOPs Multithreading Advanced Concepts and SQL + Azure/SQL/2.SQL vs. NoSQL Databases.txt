@@ -1,0 +1,23 @@
+### SQL vs. NoSQL Databases
+
+#### **SQL Databases** (Relational)
+- **Structure**: Relational databases store data in structured tables with predefined schemas. Each table consists of rows and columns.
+- **Schema**: Schema is strict and defined up-front. You cannot change the structure (like adding columns) without altering the schema.
+- **ACID Compliance**: SQL databases typically ensure **ACID (Atomicity, Consistency, Isolation, Durability)** properties, making them reliable for transactions.
+- **Query Language**: SQL (Structured Query Language) is used to query and manage the database.
+- **Scalability**: SQL databases typically scale vertically (adding more resources to a single server), though some can scale horizontally.
+- **Examples**: MySQL, PostgreSQL, Microsoft SQL Server, Oracle.
+
+#### **NoSQL Databases** (Non-relational)
+- **Structure**: NoSQL databases can store unstructured, semi-structured, or structured data. They don’t require predefined schemas. Data can be stored as key-value pairs, documents, graphs, or wide-column stores.
+- **Schema**: No predefined schema, allowing flexibility for dynamic or evolving data models.
+- **BASE Compliance**: NoSQL databases follow the **BASE (Basically Available, Soft state, Eventually consistent)** approach, which focuses more on availability and partition tolerance over strict consistency.
+- **Query Mechanism**: NoSQL databases often have different query languages specific to the type of database (e.g., MongoDB uses a JSON-like query syntax).
+- **Scalability**: NoSQL databases are designed for horizontal scaling (adding more servers).
+- **Examples**: MongoDB (document), Redis (key-value), Cassandra (wide-column), Neo4j (graph).
+
+### When to Use
+- **SQL**: Best suited for complex queries, structured data, and scenarios where ACID compliance and consistency are crucial (e.g., banking, financial systems).
+- **NoSQL**: Ideal for large volumes of unstructured data, rapid scaling, or when flexibility and eventual consistency are needed (e.g., real-time analytics, social media, content management).
+
+Would you like to dive deeper into any specific type of SQL or NoSQL database?

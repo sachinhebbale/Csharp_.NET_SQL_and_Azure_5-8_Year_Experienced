@@ -1,0 +1,116 @@
+The `Equals` and `GetHashCode` methods in C# are fundamental methods inherited from the base class `System.Object`. They are used to define how objects are compared for equality and how they are hashed, respectively. Here's a detailed explanation:
+
+---
+
+### **`Equals` Method**
+- **Purpose**: Determines whether two objects are equal.
+- **Signature**: 
+  ```csharp
+  public virtual bool Equals(object obj)
+  ```
+- **Default Behavior**: 
+  - The default implementation in `System.Object` checks **reference equality**—i.e., whether two object references point to the same memory location.
+  - For value types, the default behavior checks **value equality**.
+
+- **Override**: You override `Equals` to implement custom equality logic based on the object's properties.
+
+#### Example of Overriding `Equals`:
+```csharp
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Person other)
+        {
+            return this.Name == other.Name && this.Age == other.Age;
+        }
+        return false;
+    }
+}
+```
+#### Usage:
+```csharp
+Person p1 = new Person { Name = "Alice", Age = 30 };
+Person p2 = new Person { Name = "Alice", Age = 30 };
+
+Console.WriteLine(p1.Equals(p2)); // True (if `Equals` is overridden)
+```
+
+---
+
+### **`GetHashCode` Method**
+- **Purpose**: Provides a numeric value (hash code) that represents the object. It is often used in hash-based collections like `HashSet` or `Dictionary`.
+- **Signature**:
+  ```csharp
+  public virtual int GetHashCode()
+  ```
+- **Default Behavior**:
+  - The default implementation returns a hash code derived from the object's memory address or some other internal representation.
+  - For custom types, this may not produce meaningful or consistent results unless overridden.
+
+- **Override**: When you override `Equals`, you should also override `GetHashCode` to maintain consistency (e.g., if two objects are considered equal by `Equals`, they must return the same hash code).
+
+#### Example of Overriding `GetHashCode`:
+```csharp
+public override int GetHashCode()
+{
+    return HashCode.Combine(Name, Age); // Combines multiple fields into a single hash code
+}
+```
+
+---
+
+### **Why Override Both `Equals` and `GetHashCode`?**
+- **Equality Consistency**:
+  - If `Equals` is overridden but `GetHashCode` is not, objects that are considered equal might produce different hash codes, leading to unexpected behavior in hash-based collections.
+  - The rule is: If two objects are equal according to `Equals`, they must have the same hash code.
+
+- **Hash-Based Collections**:
+  - Collections like `Dictionary<TKey, TValue>` and `HashSet<T>` use `GetHashCode` to determine the bucket in which an object resides.
+  - If `Equals` and `GetHashCode` are inconsistent, these collections may not work as expected.
+
+---
+
+### **Example Combining Both**
+```csharp
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Person other)
+        {
+            return this.Name == other.Name && this.Age == other.Age;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Name, Age); // Use a hash code combiner for consistency
+    }
+}
+
+// Usage:
+Person p1 = new Person { Name = "Alice", Age = 30 };
+Person p2 = new Person { Name = "Alice", Age = 30 };
+
+Console.WriteLine(p1.Equals(p2)); // True
+Console.WriteLine(p1.GetHashCode() == p2.GetHashCode()); // True
+```
+
+---
+
+### **Key Points**
+- **Always override `GetHashCode` when you override `Equals`.**
+- Use tools like `HashCode.Combine` (introduced in C# 8.0) to simplify `GetHashCode` implementations.
+- Follow the contract:
+  - If `Equals` returns `true` for two objects, their hash codes must be the same.
+  - If `Equals` returns `false`, their hash codes can be the same but should ideally differ for better hashing performance.
+
+Would you like more examples or details about best practices?

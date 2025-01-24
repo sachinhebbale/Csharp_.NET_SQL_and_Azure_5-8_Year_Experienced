@@ -1,0 +1,83 @@
+Here’s a list of object-oriented programming (OOP) interview questions that might come up during a C# interview, along with brief explanations to help you prepare:
+
+### 1. **What are the four pillars of OOP?**
+   - **Encapsulation**: Bundling data and methods that operate on the data into a single unit or class, and restricting access to some of the object's components.
+   - **Abstraction**: Hiding the complex implementation details and showing only the necessary features of an object.
+   - **Inheritance**: Creating a new class (derived class) from an existing class (base class) to reuse code and establish a relationship between classes.
+   - **Polymorphism**: Allowing one interface to be used for a general class of actions. The specific action is determined by the exact nature of the situation.
+
+### 2. **What is the difference between an abstract class and an interface?**
+   - **Abstract Class**: Can contain both abstract methods (without a body) and concrete methods (with a body). It can also have fields, properties, and constructors.
+   - **Interface**: Can only contain method signatures (no method bodies), properties, events, and indexers. All methods in an interface are implicitly abstract and public. A class can implement multiple interfaces but can inherit from only one abstract class.
+
+### 3. **Explain method overloading and method overriding.**
+   - **Method Overloading**: Creating multiple methods with the same name in the same class, but with different parameters (either in number, type, or both). It’s a compile-time polymorphism.
+   - **Method Overriding**: Redefining a method in a derived class that was already defined in the base class. The method in the derived class should have the same signature as in the base class and is used to achieve runtime polymorphism.
+
+### 4. **What is the difference between a class and an object?**
+   - **Class**: A blueprint or template for creating objects. It defines properties and methods that an object created from the class can use.
+   - **Object**: An instance of a class. It is a concrete entity based on the class and has actual data and functionality as defined by the class.
+
+### 5. **What is encapsulation and how is it achieved in C#?**
+   - **Encapsulation**: The practice of keeping fields within a class private, then providing access to them via public methods or properties. This is achieved using access modifiers (`private`, `public`, `protected`, `internal`).
+
+### 6. **Explain the concept of constructors in C#.**
+   - **Constructors**: Special methods used to initialize objects of a class. In C#, constructors have the same name as the class and no return type. Constructors can be parameterized to allow for different initializations of an object.
+     - **Default Constructor**: A constructor that takes no arguments.
+     - **Parameterized Constructor**: A constructor that takes arguments to initialize fields of the class.
+     - **Copy Constructor**: A constructor that creates a new object as a copy of an existing object.
+     - **Static Constructor**: A constructor used to initialize static members of a class. It is called once, automatically, before any static members are accessed.
+
+### 7. **What is the difference between `this` and `base` keywords in C#?**
+   - **`this` Keyword**: Refers to the current instance of the class. It is used to access members of the current object.
+   - **`base` Keyword**: Used to access members of the base class from within a derived class. It is typically used to call a constructor or method of the base class.
+
+### 8. **What is inheritance and how is it implemented in C#?**
+   - **Inheritance**: The mechanism by which a class can inherit properties and methods from another class. In C#, inheritance is implemented using the colon `:` followed by the base class name. For example:
+     ```csharp
+     public class BaseClass
+     {
+         // Base class members
+     }
+
+     public class DerivedClass : BaseClass
+     {
+         // Derived class members
+     }
+     ```
+
+### 9. **What are access modifiers in C# and how do they relate to OOP?**
+   - **Access Modifiers**: Define the accessibility of a class and its members. Common access modifiers in C# include:
+     - **public**: Accessible from any other class.
+     - **private**: Accessible only within the same class.
+     - **protected**: Accessible within the same class and by derived classes.
+     - **internal**: Accessible within the same assembly.
+     - **protected internal**: Accessible within the same assembly or from derived classes.
+
+### 10. **What is polymorphism in C# and how can it be implemented?**
+   - **Polymorphism**: The ability of different classes to be treated as instances of the same class through inheritance. It allows one interface to be used for a general class of actions. Polymorphism in C# can be implemented through:
+     - **Compile-time Polymorphism**: Achieved using method overloading and operator overloading.
+     - **Runtime Polymorphism**: Achieved using method overriding with virtual methods, abstract methods, and interfaces.
+
+### 11. **Explain the concept of `sealed` keyword in C#.**
+   - **`sealed` Class**: Prevents a class from being inherited. If a class is marked as `sealed`, no other class can derive from it.
+   - **`sealed` Method**: Prevents a method from being overridden in any derived class. It is often used with methods in classes that are intended to be inherited but not modified.
+
+### 12. **What are virtual methods in C#?**
+   - **Virtual Methods**: Methods defined in a base class that can be overridden in derived classes. The `virtual` keyword is used to mark a method as overridable. The derived class uses the `override` keyword to provide a new implementation of the method.
+
+### 13. **What is the difference between `override` and `new` keywords when overriding a method?**
+   - **`override` Keyword**: Used to override a base class method that is marked as `virtual`, `abstract`, or `override`. The derived method replaces the base class method.
+   - **`new` Keyword**: Used to hide a base class method without overriding it. The new method in the derived class is a separate method that hides the base class method, but it does not replace it.
+
+### 14. **What is a destructor in C#?**
+   - **Destructor**: A method that is called automatically when an object is destroyed or finalized. In C#, destructors are defined using the tilde (`~`) followed by the class name. Destructors are used to clean up resources (unmanaged code) before the object is reclaimed by garbage collection.
+
+### 15. **Can you explain the SOLID principles in the context of OOP?**
+   - **Single Responsibility Principle (SRP)**: A class should have only one reason to change, meaning it should have only one job or responsibility.
+   - **Open/Closed Principle (OCP)**: Classes should be open for extension but closed for modification. You should be able to extend a class's behavior without modifying its source code.
+   - **Liskov Substitution Principle (LSP)**: Subtypes must be substitutable for their base types. A derived class should be able to replace its base class without affecting the functionality.
+   - **Interface Segregation Principle (ISP)**: Clients should not be forced to depend on interfaces they do not use. It's better to have many small, specific interfaces than one large, general-purpose interface.
+   - **Dependency Inversion Principle (DIP)**: High-level modules should not depend on low-level modules. Both should depend on abstractions, and abstractions should not depend on details.
+
+Preparing answers to these questions will give you a strong foundation for your C# OOP interview. Would you like to dive deeper into any of these topics?

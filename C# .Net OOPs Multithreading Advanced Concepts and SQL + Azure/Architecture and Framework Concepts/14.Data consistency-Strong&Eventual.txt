@@ -1,0 +1,21 @@
+Data consistency refers to the assurance that data remains accurate, reliable, and consistent across different systems, databases, or nodes, particularly in distributed environments. It ensures that all users see the same data at the same time, even when changes are made concurrently.
+
+There are two primary models for data consistency:
+
+### 1. **Strong Consistency**
+   - **Definition**: Ensures that after a write, all subsequent reads will return the latest updated value.
+   - **Use Cases**: Banking systems, inventory systems, or any system where it's crucial that every read reflects the most recent write.
+   - **Example**: In a banking system, if one transaction updates an account balance, all other reads should reflect the updated balance immediately.
+  
+### 2. **Eventual Consistency**
+   - **Definition**: Ensures that if no new updates are made, eventually, all replicas will converge to the same data state, though reads in the interim may show stale data.
+   - **Use Cases**: Large-scale distributed systems like social media feeds, where immediate consistency is not crucial.
+   - **Example**: When a user posts on social media, it may take some time before all users see the post, but eventually, everyone will see it.
+
+### Types of Data Consistency:
+   - **Transactional Consistency**: Ensures that a series of operations are executed in such a way that the system moves from one consistent state to another.
+   - **Read-after-Write Consistency**: Guarantees that once a write operation is confirmed, a subsequent read will always reflect the updated value.
+   - **Causal Consistency**: Ensures that operations that are causally related are seen by all nodes in the same order.
+   - **Monotonic Consistency**: Guarantees that once a node has seen a particular value, it will never see an older value.
+
+In the context of cloud services like **Azure** or **AWS**, consistency levels can be adjusted based on the requirements of the application for performance and reliability trade-offs.

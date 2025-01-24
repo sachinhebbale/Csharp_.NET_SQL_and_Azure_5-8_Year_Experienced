@@ -1,0 +1,38 @@
+Azure Functions is a serverless compute service in Microsoft Azure that allows you to run small pieces of code, or "functions," without the need to provision or manage infrastructure. These functions can be triggered by various events such as HTTP requests, messages in a queue, changes in a database, or even a timer schedule.
+
+### Key Concepts of Azure Functions:
+
+1. **Serverless Architecture**: You don't need to manage infrastructure. Azure automatically scales the number of compute resources based on the load.
+  
+2. **Event-Driven**: Azure Functions can be triggered by a wide variety of events, such as HTTP requests, changes in Azure storage (blobs, queues, tables), or messages in a service bus.
+
+3. **Pay-per-Use**: You only pay for the time your code runs, which makes it cost-effective for workloads that have variable usage patterns.
+
+4. **Bindings**: Azure Functions provides input and output bindings, which allow you to connect your functions to other Azure services like Cosmos DB, Blob Storage, or external APIs without writing a lot of boilerplate code.
+
+5. **Languages Supported**: Azure Functions support multiple programming languages, including:
+   - C#
+   - JavaScript/Node.js
+   - Python
+   - Java
+   - PowerShell
+   - TypeScript
+
+6. **Triggers**: Triggers define how the function is invoked, and they come in various forms:
+   - HTTP trigger (for API-based interactions)
+   - Timer trigger (for scheduled jobs)
+   - Blob trigger (for Azure Storage changes)
+   - Queue trigger (for Azure Storage queues)
+   - Service Bus trigger (for Azure Service Bus messages)
+   - Event Hub trigger
+
+7. **Deployment**: Azure Functions can be deployed from a local development environment, Visual Studio, or Azure DevOps. They can also be managed directly in the Azure Portal.
+
+8. **Hosting Plans**: 
+   - **Consumption Plan**: Scales automatically and charges only for the resources consumed.
+   - **Premium Plan**: Offers enhanced features like VNET integration, more robust scaling, and a fixed instance for improved performance.
+   - **Dedicated (App Service) Plan**: Runs on a dedicated instance, ideal for long-running tasks or higher control over performance.
+
+9. **Durable Functions**: A specific extension of Azure Functions for managing state and orchestration of complex workflows or long-running processes.
+
+Do you need more details on any specific part of Azure Functions?

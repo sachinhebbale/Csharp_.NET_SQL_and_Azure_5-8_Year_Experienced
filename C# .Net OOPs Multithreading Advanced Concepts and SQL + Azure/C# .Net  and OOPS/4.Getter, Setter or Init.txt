@@ -1,0 +1,80 @@
+In C#, properties provide a way to encapsulate fields and expose them through **getters** (to read the value) and **setters** (to modify the value). The `init` accessor was introduced in C# 9.0 as a way to allow setting a value only during object initialization. Here's a quick breakdown of how each works:
+
+### 1. **Getter and Setter**
+A property with both a getter and setter allows reading and modifying the property value:
+
+```csharp
+public class Person
+{
+    public string Name { get; set; } // Read and write (getter and setter)
+}
+```
+
+- **Getter**: Retrieves the value of the property.
+- **Setter**: Assigns a value to the property.
+
+Example usage:
+
+```csharp
+Person person = new Person();
+person.Name = "Alice";   // Setter is called
+Console.WriteLine(person.Name);  // Getter is called
+```
+
+### 2. **Getter-only Property**
+A property with only a getter is read-only:
+
+```csharp
+public class Person
+{
+    public string Name { get; }  // Read-only (getter only)
+    
+    public Person(string name)
+    {
+        Name = name;
+    }
+}
+```
+
+This property can only be set in the constructor or other methods, but not directly outside the class.
+
+### 3. **Setter-only Property**
+While it's rare, you can have a property with only a setter (though it's not common):
+
+```csharp
+public class Person
+{
+    private string _name;
+    
+    public string Name
+    {
+        set { _name = value; }  // Write-only (setter only)
+    }
+}
+```
+
+This property can only be set, not read directly.
+
+### 4. **Init-only Property**
+Introduced in **C# 9.0**, an `init` accessor allows the property to be set only during object initialization, making it immutable after initialization:
+
+```csharp
+public class Person
+{
+    public string Name { get; init; }  // Init-only (can be set during initialization)
+}
+```
+
+Example usage:
+
+```csharp
+Person person = new Person { Name = "Alice" };  // Init is called
+// person.Name = "Bob";  // This would cause a compile-time error
+```
+
+### Summary:
+- **Getter (`get`)**: Allows reading the property.
+- **Setter (`set`)**: Allows modifying the property.
+- **Init (`init`)**: Allows setting the property only at initialization, making it immutable afterward.
+
+Would you like to dive deeper into any specific concept related to these accessors?

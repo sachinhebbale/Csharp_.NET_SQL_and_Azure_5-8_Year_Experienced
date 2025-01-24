@@ -1,0 +1,56 @@
+In C#, a `partial` class is a way to split the definition of a class across multiple files. This can be useful for organizing code or working with large classes. All parts of a partial class must be defined with the `partial` keyword and must be in the same assembly and namespace.
+
+Here’s a basic example:
+
+**File1.cs:**
+```csharp
+using System;
+
+namespace MyNamespace
+{
+    public partial class MyClass
+    {
+        public void Method1()
+        {
+            Console.WriteLine("Method1");
+        }
+    }
+}
+```
+
+**File2.cs:**
+```csharp
+using System;
+
+namespace MyNamespace
+{
+    public partial class MyClass
+    {
+        public void Method2()
+        {
+            Console.WriteLine("Method2");
+        }
+    }
+}
+```
+
+In this example, `MyClass` is split between two files. When compiled, the compiler combines these files into a single class definition. You can use `MyClass` as if it were defined in a single file:
+
+```csharp
+class Program
+{
+    static void Main()
+    {
+        MyClass obj = new MyClass();
+        obj.Method1();
+        obj.Method2();
+    }
+}
+```
+
+**Key Points to Remember:**
+- All parts of the partial class must have the `partial` keyword.
+- Partial classes are typically used for large classes or when working with auto-generated code (like designer files in Windows Forms).
+- All partial class definitions must be in the same namespace and assembly.
+
+Is there anything specific you’d like to know more about?

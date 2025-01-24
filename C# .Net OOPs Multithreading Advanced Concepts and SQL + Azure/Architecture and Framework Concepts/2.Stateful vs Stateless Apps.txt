@@ -1,0 +1,44 @@
+In .NET Core, **stateful** and **stateless** apps refer to how an application manages and stores its state across requests.
+
+### 1. **Stateful Applications**:
+Stateful applications retain some form of state (such as user-specific data) between different requests and sessions. This state is generally maintained on the server side and is typically unique to each user. Examples of states include user sessions, authentication tokens, or data in memory.
+
+**Challenges in stateful applications**:
+- **Scaling**: Since state is stored on a specific server, scaling can be difficult. If the user’s subsequent request goes to a different server, the state must be transferred or shared, which can add complexity.
+- **Reliability**: If the server fails, all session data is lost unless a backup or session-sharing mechanism is in place.
+
+**Session Management**: In .NET Core, stateful apps often use **Session State**, where session data is stored server-side and referenced by a unique session ID.
+
+### 2. **Stateless Applications**:
+Stateless applications do not retain any information or state between different requests. Each request from the client to the server is treated as an independent transaction that is unrelated to any previous requests. This stateless nature improves scalability and performance.
+
+**Advantages of stateless applications**:
+- **Scalability**: Because no session data is stored on the server, any server in a cluster can handle the request, making it easier to scale.
+- **Fault Tolerance**: Since no state is stored, the application can recover from failures more easily without concerns about data loss.
+- **Simpler Design**: Stateless apps are generally easier to maintain and develop because there is no need to manage or synchronize session data.
+
+**Common use case**: Web APIs (especially RESTful APIs) in .NET Core are generally stateless.
+
+---
+
+### 3. **Session Affinity (Sticky Sessions)**:
+Session Affinity, also known as **sticky sessions**, is a load-balancing technique used with stateful applications. When a load balancer directs a user's first request to a particular server, session affinity ensures that all subsequent requests from that same user will be sent to the same server. This helps maintain consistency for stateful applications where server-side session data is important.
+
+#### How Session Affinity Works:
+- **Cookies**: Most commonly, the load balancer adds a session identifier (usually stored in a cookie) to ensure that all future requests from that client are routed to the same server.
+- **IP Hashing**: Another method is to hash the client’s IP address so that the same IP will be directed to the same server.
+
+#### Downsides of Session Affinity:
+- **Server Failure**: If the server goes down, the user's session will be lost, and they may need to log in or restart their activity.
+- **Scaling Issues**: Session affinity can limit the effectiveness of load balancing, especially when scaling out, as certain servers may become overloaded with a disproportionate number of users.
+
+### .NET Core and Session Affinity:
+- In .NET Core, session affinity can be implemented via the load balancer (such as Azure Load Balancer or Nginx) or by using ASP.NET Core’s built-in **session management** capabilities.
+- When using **distributed caching** (like Redis or SQL Server) for sessions, you can have a stateful app but ensure that session data is not tied to a specific server.
+
+---
+
+**Summary**:
+- **Stateful apps** store session or user-specific data on the server across requests.
+- **Stateless apps** handle each request independently with no persistent data.
+- **Session Affinity** ensures requests from the same user are sent to the same server to maintain state in stateful apps. However, it can introduce challenges in scalability and fault tolerance.

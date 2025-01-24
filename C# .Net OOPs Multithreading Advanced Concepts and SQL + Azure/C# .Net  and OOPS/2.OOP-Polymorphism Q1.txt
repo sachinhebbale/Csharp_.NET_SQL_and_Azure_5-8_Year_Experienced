@@ -1,0 +1,141 @@
+Polymorphism in object-oriented programming allows objects to be treated as instances of their parent class. In C#, polymorphism can be categorized into two types: **compile-time polymorphism** and **runtime polymorphism**. Let’s explore each type in detail:
+
+### 1. **Compile-Time Polymorphism**
+Compile-time polymorphism, also known as **static polymorphism**, is resolved during the compile time. This means the decision about which method to call is made by the compiler before the program runs. The most common ways to achieve compile-time polymorphism in C# are **method overloading** and **operator overloading**.
+
+#### **Method Overloading**
+Method overloading occurs when multiple methods have the same name but differ in the type or number of parameters.
+
+**Example:**
+```csharp
+public class Calculator
+{
+    public int Add(int a, int b)
+    {
+        return a + b;
+    }
+
+    public double Add(double a, double b)
+    {
+        return a + b;
+    }
+
+    public int Add(int a, int b, int c)
+    {
+        return a + b + c;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Calculator calc = new Calculator();
+        
+        int sum1 = calc.Add(1, 2);         // Calls Add(int, int)
+        double sum2 = calc.Add(1.5, 2.5);  // Calls Add(double, double)
+        int sum3 = calc.Add(1, 2, 3);      // Calls Add(int, int, int)
+    }
+}
+```
+
+In this example, the `Add` method is overloaded, allowing it to handle different numbers and types of arguments. The correct method to call is determined at compile time based on the arguments provided.
+
+#### **Operator Overloading**
+Operator overloading allows you to define custom behavior for operators when applied to class instances.
+
+**Example:**
+```csharp
+public class ComplexNumber
+{
+    public int Real { get; set; }
+    public int Imaginary { get; set; }
+
+    public ComplexNumber(int real, int imaginary)
+    {
+        Real = real;
+        Imaginary = imaginary;
+    }
+
+    public static ComplexNumber operator +(ComplexNumber c1, ComplexNumber c2)
+    {
+        return new ComplexNumber(c1.Real + c2.Real, c1.Imaginary + c2.Imaginary);
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        ComplexNumber c1 = new ComplexNumber(2, 3);
+        ComplexNumber c2 = new ComplexNumber(4, 5);
+        
+        ComplexNumber sum = c1 + c2; // Calls the overloaded + operator
+    }
+}
+```
+
+In this example, the `+` operator is overloaded to add two `ComplexNumber` objects, and the appropriate operation is chosen at compile time.
+
+### 2. **Runtime Polymorphism**
+Runtime polymorphism, also known as **dynamic polymorphism** or **late binding**, is resolved during runtime. This type of polymorphism occurs when a method is overridden in a derived class, and the correct method is called based on the object type at runtime, not the reference type.
+
+Runtime polymorphism is typically achieved through **method overriding** and the use of **virtual** methods in C#.
+
+#### **Method Overriding**
+Method overriding occurs when a derived class provides a specific implementation of a method that is already defined in its base class.
+
+**Example:**
+```csharp
+public class Animal
+{
+    public virtual void Speak()
+    {
+        Console.WriteLine("Animal speaks");
+    }
+}
+
+public class Dog : Animal
+{
+    public override void Speak()
+    {
+        Console.WriteLine("Dog barks");
+    }
+}
+
+public class Cat : Animal
+{
+    public override void Speak()
+    {
+        Console.WriteLine("Cat meows");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Animal myDog = new Dog();
+        Animal myCat = new Cat();
+        
+        myDog.Speak(); // Calls Dog's Speak method at runtime
+        myCat.Speak(); // Calls Cat's Speak method at runtime
+    }
+}
+```
+
+In this example, `Speak` is a virtual method in the `Animal` class. The `Dog` and `Cat` classes override this method. The actual method that gets called (whether `Dog.Speak` or `Cat.Speak`) is determined at runtime based on the object type, even though the reference type is `Animal`.
+
+#### **Why Use Runtime Polymorphism?**
+Runtime polymorphism is useful when you want to write more flexible and reusable code. For example, you can write methods that operate on a base class but will work with any derived class, allowing new behaviors to be introduced simply by creating new subclasses.
+
+**Key Differences:**
+
+| Feature                    | Compile-Time Polymorphism              | Runtime Polymorphism                |
+|----------------------------|----------------------------------------|-------------------------------------|
+| **Binding Time**           | Resolved at compile time               | Resolved at runtime                 |
+| **Achieved By**            | Method overloading, operator overloading | Method overriding, virtual methods  |
+| **Flexibility**            | Less flexible, more predictable        | More flexible, allows for dynamic behavior |
+| **Performance**            | Faster due to early binding            | Slightly slower due to late binding |
+
+Understanding these two forms of polymorphism is crucial in object-oriented programming, as they allow for more flexible, reusable, and maintainable code. Would you like to explore more examples or dive into another topic?

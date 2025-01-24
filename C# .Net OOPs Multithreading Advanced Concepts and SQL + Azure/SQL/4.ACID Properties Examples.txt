@@ -1,0 +1,113 @@
+ACID stands for **Atomicity**, **Consistency**, **Isolation**, and **Durability**. These are the key properties that ensure reliable transaction processing in a database. Let’s break down each property with an example using SQL.
+
+### **1. Atomicity**
+**Atomicity** ensures that a transaction is treated as a single unit, which either completes entirely or doesn't occur at all. If any part of the transaction fails, the entire transaction is rolled back, and the database remains unchanged.
+
+**Example:**
+
+Suppose you have two accounts in a banking system, and you want to transfer $100 from Account A to Account B.
+
+```sql
+BEGIN TRANSACTION;
+
+UPDATE Accounts
+SET Balance = Balance - 100
+WHERE AccountID = 1;
+
+UPDATE Accounts
+SET Balance = Balance + 100
+WHERE AccountID = 2;
+
+COMMIT;
+```
+
+- **Atomicity in Action:** If the first `UPDATE` succeeds but the second `UPDATE` fails (due to a network issue, constraint violation, etc.), the entire transaction will roll back, and neither account’s balance will change. This ensures that money isn’t deducted from Account A without being added to Account B.
+
+### **2. Consistency**
+**Consistency** ensures that a transaction brings the database from one valid state to another, maintaining the integrity constraints.
+
+**Example:**
+
+Suppose there’s a rule that the total balance in the system should always be $10,000.
+
+```sql
+BEGIN TRANSACTION;
+
+UPDATE Accounts
+SET Balance = Balance - 100
+WHERE AccountID = 1;
+
+UPDATE Accounts
+SET Balance = Balance + 100
+WHERE AccountID = 2;
+
+COMMIT;
+```
+
+- **Consistency in Action:** If an integrity constraint is in place ensuring the total balance remains $10,000, any transaction that violates this rule (e.g., by losing $100 during the transfer) will be rolled back, maintaining the consistency of the database.
+
+### **3. Isolation**
+**Isolation** ensures that the operations of one transaction are isolated from other transactions. The intermediate state of a transaction is invisible to other transactions until it’s complete.
+
+**Example:**
+
+Consider two users transferring money simultaneously:
+- User A transfers $100 from Account 1 to Account 2.
+- User B transfers $200 from Account 1 to Account 3.
+
+```sql
+-- Transaction 1 (User A)
+BEGIN TRANSACTION;
+
+UPDATE Accounts
+SET Balance = Balance - 100
+WHERE AccountID = 1;
+
+UPDATE Accounts
+SET Balance = Balance + 100
+WHERE AccountID = 2;
+
+COMMIT;
+
+-- Transaction 2 (User B)
+BEGIN TRANSACTION;
+
+UPDATE Accounts
+SET Balance = Balance - 200
+WHERE AccountID = 1;
+
+UPDATE Accounts
+SET Balance = Balance + 200
+WHERE AccountID = 3;
+
+COMMIT;
+```
+
+- **Isolation in Action:** Depending on the isolation level (e.g., `READ COMMITTED`, `SERIALIZABLE`), the database will ensure that these transactions don’t interfere with each other. For example, if both transactions are trying to deduct from Account 1 at the same time, the database will handle them in such a way that they don’t see each other’s intermediate states, ensuring data accuracy.
+
+### **4. Durability**
+**Durability** ensures that once a transaction is committed, it will remain so, even in the event of a system crash.
+
+**Example:**
+
+After successfully transferring $100 from Account 1 to Account 2, a commit is issued.
+
+```sql
+BEGIN TRANSACTION;
+
+UPDATE Accounts
+SET Balance = Balance - 100
+WHERE AccountID = 1;
+
+UPDATE Accounts
+SET Balance = Balance + 100
+WHERE AccountID = 2;
+
+COMMIT;
+```
+
+- **Durability in Action:** Once the `COMMIT` is issued, the changes to the accounts are permanently recorded in the database. Even if the database crashes immediately after the commit, the changes will be retained when the system is restarted.
+
+---
+
+In summary, ACID properties ensure that database transactions are processed reliably, even in the face of errors, concurrent transactions, or system failures.

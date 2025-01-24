@@ -1,0 +1,23 @@
+A **TCP (Transmission Control Protocol) connection** is a reliable communication channel established between two devices over a network, enabling them to send and receive data in a controlled, error-checked manner. It operates over the **Internet Protocol (IP)**, which is why it's commonly referred to as **TCP/IP**.
+
+Here’s how a TCP connection works:
+
+### 1. **Connection Establishment (Three-Way Handshake)**
+   - **SYN (Synchronize):** The client sends a SYN message to the server, requesting a connection.
+   - **SYN-ACK (Synchronize-Acknowledge):** The server responds with a SYN-ACK, acknowledging the request.
+   - **ACK (Acknowledge):** The client sends an ACK to confirm the handshake, and the connection is established.
+
+### 2. **Data Transfer**
+   - Data is split into segments, and each segment is sent with an acknowledgment mechanism. If any segment is lost or corrupted, it’s retransmitted.
+   - TCP ensures **in-order delivery** by numbering each segment.
+
+### 3. **Connection Termination**
+   - Either party can terminate the connection through a four-step process called the **four-way handshake**, which involves the exchange of FIN (Finish) and ACK packets to gracefully close the connection.
+
+### Key Features of TCP:
+- **Reliable:** Guarantees delivery of data in the same order it was sent.
+- **Connection-Oriented:** Requires establishing and closing a connection before and after data transmission.
+- **Error-Checking:** Uses checksums and acknowledgments to detect and correct errors.
+- **Flow Control and Congestion Control:** Manages data flow to avoid overwhelming the network or the receiving device.
+
+TCP is used for applications where reliability is critical, such as web browsing (HTTP/HTTPS), file transfers (FTP), and email (SMTP).

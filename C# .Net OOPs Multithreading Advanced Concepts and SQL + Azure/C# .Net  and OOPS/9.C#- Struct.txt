@@ -1,0 +1,71 @@
+In C#, a `struct` (short for structure) is a value type that is typically used to encapsulate small groups of related variables. Structs are similar to classes in that they can have fields, properties, methods, and constructors, but they differ in several key ways:
+
+### Key Features of `struct` in C#:
+
+1. **Value Type:**
+   - Structs are value types, meaning they are stored on the stack (unless they are part of a class) and are passed by value. This is different from classes, which are reference types and are stored on the heap.
+
+2. **No Inheritance:**
+   - Structs do not support inheritance (other than implicitly inheriting from `System.ValueType` and `Object`). You cannot derive one struct from another, nor can a struct be a base for a class.
+
+3. **Default Constructor:**
+   - Unlike classes, structs cannot have an explicit parameterless constructor. The default constructor for a struct initializes each field to its default value.
+
+4. **Immutability:**
+   - Structs are often used for immutable types, where the data does not change after the struct is created. However, this is not a requirement.
+
+5. **Performance:**
+   - Because structs are value types, they are more memory efficient for small objects. They also avoid the overhead of garbage collection since they are typically deallocated when they go out of scope.
+
+6. **Boxing and Unboxing:**
+   - When a struct is converted to an `object`, it is "boxed" into a reference type, which involves copying the value type to the heap. Unboxing is the reverse process. This can have performance implications.
+
+### Example of a Struct in C#:
+
+```csharp
+public struct Point
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+
+    // Constructor
+    public Point(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+
+    // Method
+    public void Display()
+    {
+        Console.WriteLine($"Point is at ({X}, {Y})");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Point p = new Point(10, 20);
+        p.Display();
+
+        // Because Point is a struct, this creates a copy of p
+        Point p2 = p;
+        p2.X = 30;
+        p.Display();  // Output will still be "Point is at (10, 20)"
+        p2.Display(); // Output will be "Point is at (30, 20)"
+    }
+}
+```
+
+### When to Use Structs:
+- **Small Data Structures:** Use structs for small data structures that consist mainly of data (e.g., `Point`, `Rectangle`, `Color`).
+- **Performance-Critical Applications:** Use structs in performance-critical applications where minimizing memory allocation is important.
+- **Immutable Data:** Use structs when you need immutable data types, though this is a design choice and not a requirement.
+
+### Limitations:
+- **No inheritance** means that you cannot create a hierarchy of structs.
+- **Copying behavior** can lead to unintended consequences if not handled carefully, especially with mutable structs.
+- **Boxing/Unboxing overhead** when using structs in contexts that require reference types.
+
+Structs are powerful tools in C# for specific use cases where the behavior of value types is desired.

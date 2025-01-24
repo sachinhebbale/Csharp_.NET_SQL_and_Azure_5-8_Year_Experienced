@@ -1,0 +1,132 @@
+In SQL, **global tables** and **temporary tables** are used to store intermediate results, but they serve different purposes, have different lifetimes, and are handled differently in terms of visibility and scope.
+
+### 1. **Temporary Tables**
+
+Temporary tables are created for short-term data storage, often used in a single session or transaction. There are two types of temporary tables:
+
+- **Local Temporary Tables** (`#table_name`)
+- **Global Temporary Tables** (`##table_name`)
+
+#### a. **Local Temporary Tables (`#table_name`)**
+
+A **local temporary table** is a temporary table that is only available in the current session or connection. It is automatically dropped when the session is closed or the connection is terminated.
+
+##### Characteristics:
+- **Scope**: Visible only to the session or connection that created it.
+- **Lifetime**: Automatically deleted when the session ends or the connection is closed.
+- **Name**: Starts with a single hash symbol (`#`).
+- **Usage**: Used for storing temporary data during a session for complex calculations, data transformations, or breaking down large queries.
+
+##### Syntax for Creating Local Temporary Table:
+
+```sql
+CREATE TABLE #TempTable (
+    ID INT,
+    Name VARCHAR(50),
+    Age INT
+);
+
+-- Insert data into the temporary table
+INSERT INTO #TempTable (ID, Name, Age)
+VALUES (1, 'John', 25), (2, 'Jane', 30);
+
+-- Query the temporary table
+SELECT * FROM #TempTable;
+
+-- The table is automatically dropped at the end of the session.
+```
+
+#### b. **Global Temporary Tables (`##table_name`)**
+
+A **global temporary table** is a temporary table that is visible to all sessions and connections, but it is dropped automatically when the last session referencing it is closed.
+
+##### Characteristics:
+- **Scope**: Visible to all sessions and users.
+- **Lifetime**: Automatically deleted when all sessions that reference the table are closed.
+- **Name**: Starts with a double hash symbol (`##`).
+- **Usage**: Used when you need temporary data to be shared across multiple sessions or users.
+
+##### Syntax for Creating Global Temporary Table:
+
+```sql
+CREATE TABLE ##GlobalTempTable (
+    ID INT,
+    Name VARCHAR(50),
+    Age INT
+);
+
+-- Insert data into the global temporary table
+INSERT INTO ##GlobalTempTable (ID, Name, Age)
+VALUES (1, 'John', 25), (2, 'Jane', 30);
+
+-- Query the global temporary table in another session
+SELECT * FROM ##GlobalTempTable;
+
+-- The table is dropped when the last session that references it is closed.
+```
+
+#### Key Differences Between Local and Global Temporary Tables:
+
+| Feature                | Local Temporary Table (`#`)            | Global Temporary Table (`##`)          |
+|------------------------|----------------------------------------|----------------------------------------|
+| **Visibility**          | Only in the session that created it    | Visible to all sessions                |
+| **Lifetime**            | Dropped when the session ends          | Dropped when the last session ends     |
+| **Name Conflict**       | Can have the same name in different sessions | Name must be unique across all sessions |
+| **Usage**               | Session-specific, isolated queries     | Shared temporary data across sessions  |
+
+### 2. **Global Tables**
+
+Global tables are typically **permanent tables** that are accessible to all users, but in some cloud platforms like **Amazon DynamoDB**, **global tables** refer to special types of tables that provide cross-region replication and availability.
+
+#### Characteristics of Global Tables (in the context of DynamoDB):
+- **Replication**: Data is automatically replicated across multiple regions, providing high availability and disaster recovery.
+- **Consistency**: Provides eventual or strongly consistent reads.
+- **Usage**: Ensures high availability of the data across different geographic locations.
+
+In SQL databases, **global tables** (as a general term) refer to tables that are **not session-bound**, meaning they are permanent and accessible to all users who have the necessary permissions.
+
+##### Example of a Global (Permanent) Table:
+
+```sql
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(100),
+    Country VARCHAR(50)
+);
+
+-- Query this table across multiple sessions or connections
+SELECT * FROM Customers;
+```
+
+Unlike temporary tables, **global tables** (permanent tables) persist in the database until explicitly dropped using the `DROP TABLE` statement.
+
+### 3. **Comparison of Temporary and Global Tables**
+
+| Feature                | Temporary Table (`# or ##`)             | Global (Permanent) Table                |
+|------------------------|----------------------------------------|----------------------------------------|
+| **Visibility**          | Session-specific or all sessions (##)  | Visible to all users with permissions  |
+| **Lifetime**            | Automatically dropped after session ends | Persistent until manually dropped     |
+| **Naming**              | Can use `#` or `##` prefixes           | No special prefix                     |
+| **Data Persistence**    | Temporary, session-specific            | Permanent, persists across sessions   |
+| **Use Cases**           | Intermediate data storage, complex queries | Persistent data, application-wide storage |
+
+### 4. **Use Cases for Temporary and Global Tables**
+
+#### a. **Temporary Tables (Local and Global)**
+- **Complex Queries**: Break down complex queries or store intermediate results.
+- **ETL Processes**: Store temporary data during data transformation or data loading tasks.
+- **Performance Optimization**: Used to optimize large queries by temporarily storing results in stages.
+- **Testing**: Great for running temporary calculations or tests without impacting the permanent data structure.
+
+#### b. **Global (Permanent) Tables**
+- **Application Data**: Store long-term application data (e.g., customer, order, product details).
+- **Shared Data**: Store data that needs to be accessed by multiple sessions or applications.
+- **Historical Data**: Store historical data that must persist for reporting and analysis.
+  
+### Summary
+
+- **Local Temporary Tables (`#TempTable`)** are session-specific, only visible within the current connection, and are automatically dropped when the session ends.
+- **Global Temporary Tables (`##TempTable`)** are visible to all sessions and are dropped when the last session referencing them ends.
+- **Global (Permanent) Tables** are permanent tables that are accessible to all users with appropriate permissions and persist until manually dropped.
+  
+These options give flexibility in handling both short-term and long-term data storage depending on the needs of your SQL operations.

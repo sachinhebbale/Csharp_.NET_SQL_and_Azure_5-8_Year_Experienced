@@ -1,0 +1,32 @@
+In cryptographic hash functions like **SHA-256**, the term **hash size** refers to the length (in bits) of the output produced by the hash function. Specifically for **SHA-256**, the **hash size** is **256 bits**, which means that the output of the function is a 256-bit (32-byte) fixed-length value, regardless of the size of the input data.
+-
+### Example of SHA-256 Hashing:
+
+If you take any input, such as a small string or a large file, and apply SHA-256 to it, the result will always be a fixed 256-bit (or 64-character hexadecimal) value.
+
+#### Example:
+- **Input**: `"hello"`
+- **SHA-256 Hash (Hexadecimal form)**: 
+  ```
+  2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+  ```
+
+In binary form, this hash is exactly 256 bits long.
+
+### Why Does Hash Size Matter?
+
+1. **Fixed-Length Output**:
+   - The hash size ensures that no matter how long the input data is, the output will always have a fixed length. This is important for consistency in storage, processing, and comparisons.
+
+2. **Security**:
+   - The larger the hash size, the more secure the hash function is against brute-force attacks. In theory, to find a collision (two inputs that hash to the same value), an attacker would need to perform \(2^{256}\) operations (for SHA-256) in a brute-force attack, which is computationally infeasible with today’s technology.
+
+3. **Uniqueness and Collision Resistance**:
+   - With a 256-bit hash, the chance of two different inputs producing the same hash value (a collision) is extremely low. The larger the hash size, the less likely it is for a collision to occur by chance.
+
+### Key Points About SHA-256 Hash Size:
+- **256 bits** (32 bytes) is the length of the hash value.
+- **Fixed length** regardless of input size.
+- **Hexadecimal representation**: The 256-bit hash is typically displayed as a 64-character string (each hexadecimal character represents 4 bits).
+
+In summary, the **hash size** in SHA-256 defines the length of the output (256 bits), which is crucial for security and consistency. It ensures that every input results in a unique (or nearly unique) fixed-length fingerprint of 256 bits.

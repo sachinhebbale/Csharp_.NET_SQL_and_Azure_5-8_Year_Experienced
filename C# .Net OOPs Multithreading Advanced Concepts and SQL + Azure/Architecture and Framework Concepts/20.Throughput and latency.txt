@@ -1,0 +1,24 @@
+**Throughput** and **latency** are both important metrics for evaluating system performance, particularly in networking, computing, and data transfer, but they measure different aspects:
+
+### 1. **Latency**:
+- **Definition**: Latency refers to the delay between the initiation of a request and the moment the response begins. It’s the time it takes for data to travel from the source to the destination and for a response to start coming back.
+- **Unit of Measure**: Usually measured in milliseconds (ms) or nanoseconds (ns).
+- **Purpose**: It’s a measure of responsiveness. Lower latency means a faster response time, which is critical for real-time systems (e.g., online gaming, video conferencing).
+- **Example**: The time it takes for a packet to go from your computer to a remote server and back is latency.
+
+### 2. **Throughput**:
+- **Definition**: Throughput is the amount of data that can be transmitted or processed in a given amount of time. It’s typically measured in bits per second (bps), megabits per second (Mbps), or gigabytes per second (GBps).
+- **Unit of Measure**: Usually measured in units like bits per second (bps), megabytes per second (MBps), etc.
+- **Purpose**: Throughput measures the data transfer capacity of a system. Higher throughput means more data can be moved or processed in less time, which is crucial for tasks like large file transfers, database processing, or media streaming.
+- **Example**: The amount of data a network can handle per second, such as a 100 Mbps internet connection, is throughput.
+
+### Key Differences:
+- **Latency** measures the delay or time it takes for a response to start, while **throughput** measures how much data can be transferred or processed over time.
+- **Low latency** is critical for applications that need fast responsiveness, such as real-time communications.
+- **High throughput** is essential for applications that need to move large amounts of data, like streaming videos or transferring files.
+
+### Example (Network Context):
+- In a high-latency, low-throughput network, data requests take a long time to start, and when they do, data moves slowly (e.g., satellite internet).
+- In a low-latency, high-throughput network, requests start quickly, and data flows rapidly (e.g., fiber-optic internet).
+
+In summary, latency is about *response time*, and throughput is about *data capacity* over time. Both affect overall system performance in different ways.

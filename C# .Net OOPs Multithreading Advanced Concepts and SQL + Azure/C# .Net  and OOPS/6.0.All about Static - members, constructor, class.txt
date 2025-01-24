@@ -1,0 +1,92 @@
+In C#, the `static` keyword is used to define members that belong to the type itself rather than to a specific instance of the type. Here's how `static` can be used:
+
+### 1. **Static Fields**
+   - **Definition:** A static field is shared among all instances of a class. There is only one copy of a static field, regardless of how many instances of the class exist.
+   - **Example:**
+     ```csharp
+     class Example
+     {
+         public static int Counter = 0;
+     }
+
+     // Usage:
+     Example.Counter++; // Increases the static Counter by 1
+     ```
+
+### 2. **Static Methods**
+   - **Definition:** A static method belongs to the class itself, not to any specific object. Static methods can only access static members (fields, properties, methods) of the class.
+   - **Example:**
+     ```csharp
+     class Calculator
+     {
+         public static int Add(int a, int b)
+         {
+             return a + b;
+         }
+     }
+
+     // Usage:
+     int result = Calculator.Add(5, 3); // Calls the static method directly using the class name
+     ```
+
+### 3. **Static Properties**
+   - **Definition:** Similar to static fields, but with encapsulation through getters and setters.
+   - **Example:**
+     ```csharp
+     class Config
+     {
+         private static string _appName;
+
+         public static string AppName
+         {
+             get { return _appName; }
+             set { _appName = value; }
+         }
+     }
+
+     // Usage:
+     Config.AppName = "MyApp"; // Sets the static property
+     string name = Config.AppName; // Gets the static property
+     ```
+
+### 4. **Static Constructors**
+   - **Definition:** A static constructor is used to initialize static fields or perform actions that only need to be done once. It is called automatically before any static members are accessed or any instances of the class are created.
+   - **Example:**
+     ```csharp
+     class Logger
+     {
+         public static string DefaultLogPath;
+
+         static Logger()
+         {
+             DefaultLogPath = "/var/logs";
+         }
+     }
+
+     // Usage:
+     // The static constructor is automatically called before any usage of Logger
+     Console.WriteLine(Logger.DefaultLogPath);
+     ```
+
+### 5. **Static Classes**
+   - **Definition:** A static class cannot be instantiated and can only contain static members (methods, fields, properties). It is often used to group utility or helper methods.
+   - **Example:**
+     ```csharp
+     static class MathHelper
+     {
+         public static double Square(double x)
+         {
+             return x * x;
+         }
+     }
+
+     // Usage:
+     double square = MathHelper.Square(5); // Calls the static method
+     ```
+
+### Important Points to Remember:
+- **No Instances:** Static members can be accessed without creating an instance of the class.
+- **Memory Sharing:** Static fields and properties are shared across all instances, making them useful for keeping track of data that is global to the class.
+- **Single Constructor:** A class can have only one static constructor, and it cannot take parameters or have an access modifier (it is always `private` by default).
+
+Static members are powerful but should be used carefully to avoid issues such as tight coupling and unexpected behavior in multi-threaded scenarios.

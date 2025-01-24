@@ -1,0 +1,125 @@
+Cursors in SQL are a powerful tool when working with row-by-row operations. However, they can be resource-intensive, so they should be used judiciously. Below is a detailed explanation of **`FETCH`** and other important features of a cursor, as well as some common uses.
+
+### Key Features of Cursors
+
+#### 1. **DECLARE**:
+   - A cursor is declared with the `DECLARE` statement, defining the result set it will iterate over.
+   - You can specify additional options like whether the cursor is scrollable or sensitive to changes.
+
+#### 2. **OPEN**:
+   - Once declared, the cursor is opened using the `OPEN` statement, which prepares the cursor for fetching data.
+
+#### 3. **FETCH**:
+   - The `FETCH` statement retrieves a single row from the result set into variables.
+   - By default, the cursor fetches rows sequentially. However, with scrollable cursors, you can fetch specific rows or navigate forward/backward through the result set.
+
+**FETCH Syntax**:
+```sql
+FETCH [NEXT | PRIOR | FIRST | LAST | ABSOLUTE n | RELATIVE n] 
+FROM cursor_name INTO variable_list;
+```
+
+- **NEXT**: Fetches the next row (default behavior).
+- **PRIOR**: Fetches the previous row.
+- **FIRST**: Fetches the first row of the result set.
+- **LAST**: Fetches the last row.
+- **ABSOLUTE n**: Fetches the nth row of the result set.
+- **RELATIVE n**: Fetches the row relative to the current position.
+
+#### 4. **@@FETCH_STATUS**:
+   - After each `FETCH`, the system variable `@@FETCH_STATUS` returns the success or failure of the fetch.
+   - Common values:
+     - `0`: Successful fetch.
+     - `-1`: No more rows to fetch.
+     - `-2`: Fetch was unsuccessful because the requested row is missing.
+
+#### 5. **CLOSE**:
+   - After the cursor has finished its work, the `CLOSE` statement releases the cursor's current result set, freeing up any resources tied to it.
+
+#### 6. **DEALLOCATE**:
+   - The `DEALLOCATE` statement removes the cursor definition and its associated resources from memory.
+
+### Cursor Types
+
+1. **STATIC Cursor**:
+   - A snapshot of the result set is taken when the cursor is opened. Any changes to the underlying data after the cursor is opened are not reflected.
+   - Best for read-only operations.
+
+2. **DYNAMIC Cursor**:
+   - The result set is dynamic, meaning changes to the underlying data (INSERT, UPDATE, DELETE) are reflected while the cursor is open.
+   - Useful when you need real-time data updates while navigating the result set.
+
+3. **FAST_FORWARD Cursor**:
+   - Combines a forward-only, read-only cursor. It is the most efficient and lightweight cursor type.
+   - It allows only sequential navigation and is ideal for simple, read-only row-by-row operations.
+
+4. **KEYSET Cursor**:
+   - The keyset is built when the cursor is opened. Changes to the data (other than inserts) are visible, but new rows added to the underlying data are not reflected.
+
+### Uses of Cursors
+
+1. **Row-by-Row Processing**:
+   - Cursors are used when you need to process each row individually, like performing calculations or business logic that cannot be handled by set-based SQL operations.
+
+   **Example**: Sending an email to every employee from the result set one by one.
+
+2. **Generating Row Numbers**:
+   - Cursors can help when you need to add a custom row numbering to your result set, especially in databases where this feature isn’t built-in.
+
+3. **Data Migrations and ETL (Extract, Transform, Load) Processes**:
+   - Cursors are used in ETL operations when handling complex transformations between rows.
+
+4. **Debugging and Testing**:
+   - When debugging complex queries or procedures, using cursors can help to see and verify row-by-row operations.
+
+5. **Complex Updates/Deletes**:
+   - Cursors are sometimes useful in performing complex update or delete operations, especially when the logic involves multiple steps or depends on the current state of the row being processed.
+
+### Example: Scrollable Cursor
+
+Here’s an example of how to declare and use a scrollable cursor:
+
+```sql
+DECLARE @EmployeeID INT, @EmployeeName NVARCHAR(50);
+
+-- Declare a scrollable cursor
+DECLARE employee_cursor SCROLL CURSOR FOR
+SELECT EmployeeID, EmployeeName
+FROM Employees
+WHERE Department = 'HR';
+
+-- Open the cursor
+OPEN employee_cursor;
+
+-- Fetch the first row
+FETCH FIRST FROM employee_cursor INTO @EmployeeID, @EmployeeName;
+PRINT 'First Row: ' + @EmployeeName;
+
+-- Fetch the next row
+FETCH NEXT FROM employee_cursor INTO @EmployeeID, @EmployeeName;
+PRINT 'Next Row: ' + @EmployeeName;
+
+-- Fetch the prior row (move backward)
+FETCH PRIOR FROM employee_cursor INTO @EmployeeID, @EmployeeName;
+PRINT 'Previous Row: ' + @EmployeeName;
+
+-- Fetch the last row
+FETCH LAST FROM employee_cursor INTO @EmployeeID, @EmployeeName;
+PRINT 'Last Row: ' + @EmployeeName;
+
+-- Close and deallocate the cursor
+CLOSE employee_cursor;
+DEALLOCATE employee_cursor;
+```
+
+### Advantages of Using Cursors
+- **Fine-grained control**: Allows row-by-row processing that cannot be done with set-based operations.
+- **Dynamic data manipulation**: Can be used to manipulate and process data dynamically, where each row might have unique handling logic.
+
+### Disadvantages
+- **Performance overhead**: Cursors can be slower compared to set-based operations because they require resource-intensive row-by-row processing.
+- **Complexity**: Writing and maintaining cursor-based logic can be more complex than using set-based logic.
+
+### When to Avoid Cursors
+- If the same result can be achieved with set-based SQL operations, it's generally better to avoid cursors for performance reasons.
+- In high-concurrency environments, cursors can lead to locking and blocking issues.

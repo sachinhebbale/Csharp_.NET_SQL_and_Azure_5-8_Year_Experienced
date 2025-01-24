@@ -1,0 +1,28 @@
+GET is stateless; as a verb in the HTTP spec, it doesn't seek to change the state of the web server. That necessarily implies that you get all the caching, pre-requesting, transparent re-requesting etc. that you'd maybe want in your protocol.
+POST is stateful; it will change the state of the web server, which means it can send data to the server and have it act upon that.
+These distinctions aren't enforces, because you can have GET requests that have query strings such as GET /lol?makeNewUser=yes&uname=phil&pass=p0ps1cles (and, for completeness POST requests that just retrieve a static page).
+
+The hope, though, when HTTP was conceived (in 1996, lol! RFC 1945) was that it would be used as above. If they'd have known what it would become today, I think they might have done things a little different (around authentication, etc.)
+
+=========================================
+Right off the bat:
+
+GET requests can be cached
+GET requests remain in the browser history
+GET requests can be bookmarked
+GET requests should never be used when dealing with sensitive data
+GET requests have length restrictions
+GET requests should be used only to retrieve data
+
+
+POST requests are never cached
+POST requests do not remain in the browser history
+POST requests cannot be bookmarked
+POST requests have no restrictions on data length
+HTTP Methods GET vs POST
+
+GET is more useful to users based on HTTP standards for accessing the page. POST is more useful to the servers for submitting data.
+
+Additionally, with REST API GET vs. POST vs. PUT vs. UPDATE vs DELETE, etc adds extra context to what the user is attempting to do.
+
+

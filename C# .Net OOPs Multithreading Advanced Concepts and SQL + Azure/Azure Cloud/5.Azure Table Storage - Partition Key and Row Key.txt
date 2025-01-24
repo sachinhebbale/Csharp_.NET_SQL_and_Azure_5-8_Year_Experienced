@@ -1,0 +1,25 @@
+In Azure Table Storage, **Partition Key** and **Row Key** are used to uniquely identify and organize data in a table. Here's a breakdown of both:
+
+### 1. **Partition Key**:
+   - The **Partition Key** is used to group entities (rows) within a table. Entities that share the same Partition Key are stored together and can be queried faster when retrieving data by the Partition Key.
+   - Azure Table Storage uses the Partition Key to distribute data across multiple storage nodes to ensure scalability and load balancing.
+   - Entities with the same Partition Key are typically stored on the same storage node, which can make querying and operations on them more efficient.
+   - It’s important to design the Partition Key with performance in mind, balancing between efficient querying and scalability.
+
+### 2. **Row Key**:
+   - The **Row Key** uniquely identifies a specific entity within a partition (i.e., for a given Partition Key).
+   - It’s unique within the partition, meaning no two entities within the same partition can have the same Row Key.
+   - The combination of the Partition Key and Row Key forms a composite key that uniquely identifies each entity in the table.
+   
+### Key Points:
+   - Together, **Partition Key + Row Key** must be unique for each entity in the table.
+   - The Partition Key helps with data distribution, while the Row Key uniquely identifies an entity within that partition.
+   - Efficient querying typically requires knowing both the Partition Key and the Row Key, though you can query by just the Partition Key or scan the entire table.
+
+### Example:
+For a table storing customer orders:
+- **Partition Key**: Could be the customer's `Country` (e.g., "USA").
+- **Row Key**: Could be the `OrderID` (e.g., "ORD12345").
+  
+This way, all orders from the USA would be stored together, and each order would be uniquely identified by its `OrderID`.
+

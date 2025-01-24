@@ -1,0 +1,193 @@
+**Window functions** in SQL are powerful tools that allow you to perform calculations across a set of rows that are related to the current row, without collapsing the result set. They enable you to compute values such as running totals, rankings, moving averages, and more while maintaining the original row structure.
+
+### Key Concepts of Window Functions
+
+1. **Window**: A window refers to a set of rows that the function operates on. Unlike `GROUP BY`, which reduces the number of rows in the result set, window functions calculate values across a subset of rows but do not group the results.
+   
+2. **OVER() Clause**: The `OVER()` clause defines the window or subset of rows for the function to operate on. You can partition and order the rows in the window.
+
+### Syntax of a Window Function
+
+```sql
+window_function() OVER (
+    [PARTITION BY column_list] 
+    [ORDER BY column_list]
+    [ROWS or RANGE specification]
+)
+```
+
+- **window_function()**: The type of window function you’re using (e.g., `ROW_NUMBER()`, `RANK()`, `SUM()`).
+- **PARTITION BY**: Divides the result set into partitions (similar to a `GROUP BY`). The window function is applied to each partition independently.
+- **ORDER BY**: Specifies the order of rows in each partition.
+- **ROWS or RANGE**: Defines the frame of rows that the window function operates over (optional).
+
+### Types of Window Functions
+
+1. **Ranking Functions**:
+   - These functions assign a rank or row number to each row within a partition.
+
+2. **Aggregate Functions**:
+   - These are standard aggregate functions like `SUM()`, `AVG()`, `COUNT()`, etc., but with the `OVER()` clause, they become window functions.
+
+3. **Value Functions**:
+   - These return specific row values from the window, such as `LEAD()`, `LAG()`, `FIRST_VALUE()`, and `LAST_VALUE()`.
+
+### 1. Ranking Functions
+
+#### a. `ROW_NUMBER()`
+
+Assigns a unique sequential number to rows within a partition. It resets for each partition if `PARTITION BY` is used.
+
+```sql
+SELECT EmployeeID, EmployeeName,
+       ROW_NUMBER() OVER (ORDER BY Salary DESC) AS RowNum
+FROM Employees;
+```
+
+This assigns a row number to each employee based on salary, with the highest salary getting `RowNum = 1`.
+
+#### b. `RANK()`
+
+Assigns ranks with gaps where there are ties. If two rows are tied for a rank, the next rank will skip numbers.
+
+```sql
+SELECT EmployeeID, EmployeeName, Salary,
+       RANK() OVER (ORDER BY Salary DESC) AS Rank
+FROM Employees;
+```
+
+This ranks employees by salary, but if two employees have the same salary, they will share the same rank, and the next rank will be skipped.
+
+#### c. `DENSE_RANK()`
+
+Similar to `RANK()`, but it does not leave gaps. If two rows are tied, the next row gets the immediate next rank.
+
+```sql
+SELECT EmployeeID, EmployeeName, Salary,
+       DENSE_RANK() OVER (ORDER BY Salary DESC) AS DenseRank
+FROM Employees;
+```
+
+In this case, there are no gaps in ranking after ties.
+
+### 2. Aggregate Functions as Window Functions
+
+Aggregate functions like `SUM()`, `AVG()`, `COUNT()`, `MIN()`, and `MAX()` can be turned into window functions with the `OVER()` clause.
+
+#### Example: Running Total with `SUM()`
+
+```sql
+SELECT OrderID, OrderDate, Amount,
+       SUM(Amount) OVER (ORDER BY OrderDate) AS RunningTotal
+FROM Orders;
+```
+
+This calculates a running total of the `Amount` column, ordered by `OrderDate`.
+
+#### Example: Partitioned `AVG()`
+
+```sql
+SELECT Department, EmployeeID, Salary,
+       AVG(Salary) OVER (PARTITION BY Department) AS AvgSalaryByDept
+FROM Employees;
+```
+
+This calculates the average salary within each department. The `PARTITION BY` clause divides the rows into partitions based on the `Department` column, and the `AVG()` function is applied within each partition.
+
+### 3. Value Functions
+
+These functions allow you to access data from other rows in the window.
+
+#### a. `LAG()` and `LEAD()`
+
+- **`LAG()`**: Returns the value from the previous row in the window.
+- **`LEAD()`**: Returns the value from the next row in the window.
+
+```sql
+-- Get the current and previous order amounts
+SELECT OrderID, Amount,
+       LAG(Amount, 1) OVER (ORDER BY OrderDate) AS PreviousAmount
+FROM Orders;
+```
+
+This returns the previous row’s amount for each row in the result set. If there is no previous row, `NULL` is returned.
+
+```sql
+-- Get the current and next order amounts
+SELECT OrderID, Amount,
+       LEAD(Amount, 1) OVER (ORDER BY OrderDate) AS NextAmount
+FROM Orders;
+```
+
+This returns the next row’s amount for each row.
+
+#### b. `FIRST_VALUE()` and `LAST_VALUE()`
+
+- **`FIRST_VALUE()`**: Returns the first value in the window for the specified order.
+- **`LAST_VALUE()`**: Returns the last value in the window.
+
+```sql
+SELECT EmployeeID, EmployeeName, Salary,
+       FIRST_VALUE(Salary) OVER (ORDER BY Salary DESC) AS HighestSalary
+FROM Employees;
+```
+
+This returns the highest salary for each row, regardless of the current row’s value, because it's ordered by salary.
+
+### Frames in Window Functions
+
+Frames further restrict the rows considered by the window function, especially useful in cumulative or moving calculations. Frames are defined using `ROWS` or `RANGE`.
+
+#### Example: Using `ROWS`
+
+```sql
+SELECT OrderID, Amount,
+       SUM(Amount) OVER (ORDER BY OrderDate
+                         ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS MovingTotal
+FROM Orders;
+```
+
+This calculates a moving total that includes the current row and the row immediately before it.
+
+#### ROWS vs. RANGE
+
+- **`ROWS`**: Deals with the exact number of rows in relation to the current row.
+- **`RANGE`**: Deals with ranges of values (e.g., all rows that have the same ordering value as the current row).
+
+### Example Combining Different Window Functions
+
+```sql
+WITH SalesData AS (
+    SELECT EmployeeID, SaleAmount, SaleDate,
+           ROW_NUMBER() OVER (PARTITION BY EmployeeID ORDER BY SaleDate) AS SaleOrder,
+           SUM(SaleAmount) OVER (PARTITION BY EmployeeID ORDER BY SaleDate) AS RunningTotal,
+           LAG(SaleAmount, 1) OVER (PARTITION BY EmployeeID ORDER BY SaleDate) AS PreviousSale,
+           LEAD(SaleAmount, 1) OVER (PARTITION BY EmployeeID ORDER BY SaleDate) AS NextSale
+    FROM Sales
+)
+SELECT *
+FROM SalesData;
+```
+
+- **`ROW_NUMBER()`**: Provides a sequential number to each sale per employee.
+- **`SUM()`**: Tracks a running total for each employee’s sales.
+- **`LAG()` and `LEAD()`**: Get the previous and next sale amounts.
+
+### Benefits of Window Functions
+
+1. **Non-Collapsing Results**: Unlike `GROUP BY`, window functions do not reduce the number of rows in the result set, allowing you to retain detailed data while adding analytical calculations.
+   
+2. **Ease of Use**: Simplifies tasks like ranking, running totals, and moving averages that would otherwise require complex self-joins or subqueries.
+
+3. **Flexibility**: You can combine multiple window functions in a single query.
+
+### Use Cases
+
+- **Rankings**: Finding top performers, assigning ranks based on performance.
+- **Running Totals**: Calculating cumulative sums or averages in time series data.
+- **Comparisons**: Comparing current values with previous or next values (e.g., month-over-month sales growth).
+- **Aggregations**: Performing calculations within partitions without losing row details.
+
+### Conclusion
+
+Window functions are highly versatile, making them essential for advanced data analysis in SQL. They allow you to perform row-based calculations, aggregations, and rankings without altering the structure of the result set, and they're especially useful when working with time series or partitioned data.

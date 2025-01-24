@@ -1,0 +1,70 @@
+A **self join** in SQL is a type of join where a table is joined with itself. This can be useful when you want to compare rows within the same table or when dealing with hierarchical data.
+
+### When to Use a Self Join
+- **Hierarchical Data**: To handle parent-child relationships, such as organizational charts.
+- **Comparing Rows**: When you need to compare rows in the same table, such as finding pairs of rows that meet certain criteria.
+
+### Syntax of a Self Join
+
+The basic syntax for a self join is:
+```sql
+SELECT a.*, b.*
+FROM table_name a
+JOIN table_name b
+ON a.column_name = b.column_name
+WHERE condition;
+```
+
+Here, `a` and `b` are aliases for the same table, allowing you to treat them as two separate tables in the join operation.
+
+### Example: Employee Table
+
+Consider an `Employees` table with columns `EmployeeID`, `FirstName`, `LastName`, `ManagerID`. Each employee can have a manager who is also an employee.
+
+```sql
+CREATE TABLE Employees
+(
+    EmployeeID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    ManagerID INT
+);
+```
+
+To list all employees along with their managers, you would use a self join:
+
+```sql
+SELECT e1.EmployeeID AS EmployeeID,
+       e1.FirstName AS EmployeeFirstName,
+       e1.LastName AS EmployeeLastName,
+       e2.EmployeeID AS ManagerID,
+       e2.FirstName AS ManagerFirstName,
+       e2.LastName AS ManagerLastName
+FROM Employees e1
+LEFT JOIN Employees e2
+ON e1.ManagerID = e2.EmployeeID;
+```
+
+In this example:
+- `e1` is an alias for the first instance of the `Employees` table (the employees).
+- `e2` is an alias for the second instance of the `Employees` table (the managers).
+- The join condition `e1.ManagerID = e2.EmployeeID` matches employees to their respective managers.
+- A `LEFT JOIN` ensures that employees who do not have a manager are still included in the result set.
+
+### Example: Finding Duplicate Rows
+
+To find duplicate rows based on some criteria, such as identifying employees with the same `LastName`:
+
+```sql
+SELECT e1.EmployeeID, e1.LastName
+FROM Employees e1
+JOIN Employees e2
+ON e1.LastName = e2.LastName
+WHERE e1.EmployeeID <> e2.EmployeeID;
+```
+
+In this example:
+- The self join on `LastName` identifies employees with the same last name.
+- The condition `e1.EmployeeID <> e2.EmployeeID` ensures that the same row is not compared with itself.
+
+Self joins can be very powerful for comparing rows within the same table or analyzing hierarchical relationships.

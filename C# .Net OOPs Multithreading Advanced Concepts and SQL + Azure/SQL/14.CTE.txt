@@ -1,0 +1,61 @@
+In MS SQL Server, a **CTE (Common Table Expression)** is a temporary result set that you can reference within a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement. It helps break down complex queries and makes them easier to read and maintain. A CTE is defined using the `WITH` keyword.
+
+### Syntax:
+```sql
+WITH cte_name (column1, column2, ...)
+AS
+(
+    -- CTE query definition
+    SELECT ...
+)
+-- Query using the CTE
+SELECT * FROM cte_name;
+```
+
+### Example:
+
+Here’s a simple example to demonstrate the use of a CTE. Suppose we have a table `Employees` with columns `EmployeeID`, `FirstName`, `LastName`, `ManagerID`, and `Salary`.
+
+```sql
+WITH EmployeeCTE AS
+(
+    SELECT EmployeeID, FirstName, LastName, ManagerID, Salary
+    FROM Employees
+    WHERE Salary > 50000
+)
+SELECT * 
+FROM EmployeeCTE
+WHERE ManagerID IS NOT NULL;
+```
+
+In this example:
+1. The CTE `EmployeeCTE` selects employees with a salary greater than 50,000.
+2. The outer query then selects employees from the CTE who have a `ManagerID` that is not null.
+
+### Recursive CTE Example:
+A **recursive CTE** is useful when working with hierarchical data such as an organizational chart.
+
+```sql
+WITH RecursiveCTE AS
+(
+    -- Anchor member
+    SELECT EmployeeID, FirstName, ManagerID, 1 AS Level
+    FROM Employees
+    WHERE ManagerID IS NULL  -- Top-level managers
+
+    UNION ALL
+
+    -- Recursive member
+    SELECT e.EmployeeID, e.FirstName, e.ManagerID, r.Level + 1
+    FROM Employees e
+    INNER JOIN RecursiveCTE r ON e.ManagerID = r.EmployeeID
+)
+SELECT * 
+FROM RecursiveCTE;
+```
+
+In this recursive CTE:
+- The anchor member retrieves top-level managers (`ManagerID IS NULL`).
+- The recursive member retrieves employees who report to the managers retrieved in the previous step, incrementing the `Level` column to represent the hierarchy.
+
+CTEs can be very powerful for improving query readability and breaking down complex logic into manageable pieces.

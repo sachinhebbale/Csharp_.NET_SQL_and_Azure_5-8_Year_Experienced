@@ -1,0 +1,44 @@
+In **Azure Functions**, system and host keys are used to secure and control access to the function app's endpoints. These keys are primarily used for managing API-level security and restricting access.
+
+### Types of Keys in Azure Functions
+
+1. **Function Keys**: These are used to secure individual functions.
+2. **Host Keys**: These apply to all functions within a function app.
+3. **System Keys**: These are used for internal purposes and integrations, and they are managed by Azure.
+
+#### **Host Keys**
+
+- **Scope**: Host keys are scoped to the entire function app. They can be used to authenticate requests to any function within the function app.
+- **Usage**: 
+   - Host keys allow you to access all the functions under a function app without needing to use individual function keys.
+   - These keys are often used when setting up external integrations or managing function apps via the Azure API.
+   - You can define multiple host keys and also have a default host key that can be rotated.
+   - Typically, host keys are stored in the function app’s `host.json` file.
+
+- **Types of Host Keys**:
+  - **`default` Host Key**: Automatically generated when the function app is created. It can be used for broad access.
+  - **Custom Host Keys**: You can create custom host keys for different users or integrations, and they allow better management of access.
+
+#### **System Keys**
+
+- **Scope**: System keys are used internally by Azure and are typically not meant for direct use by developers.
+- **Usage**:
+  - System keys are automatically generated and are used for internal Azure services or extensions like Durable Functions, Event Grid, or Azure API Management.
+  - These keys ensure that Azure services can securely call functions or trigger them.
+  - They are not meant for external users and usually cannot be modified or managed through the function app settings.
+
+- **Internal Azure Use**: These keys are utilized when Azure’s internal services like Event Grid or other integrations need to trigger or access a function securely without requiring a user-provided key.
+
+### **Managing Keys**
+
+- You can manage both host and function keys through the **Azure Portal**, **Azure CLI**, or **Azure Functions Core Tools**.
+- To access keys via the Azure Portal:
+  - Navigate to the function app -> **Functions** -> Select the function -> **Function Keys** for managing function-specific keys.
+  - **Host Keys** can be accessed from the "Function App" section -> **Host Keys**.
+
+### Key Differences
+
+- **Host Keys**: Provide broad access to all functions within a function app. Typically used in scenarios where multiple functions need to be accessed by the same client.
+- **System Keys**: Used for internal Azure integrations and are not intended for user management or external access. These are more specialized and automatically managed by Azure.
+
+Let me know if you need a deeper explanation on any specific part!

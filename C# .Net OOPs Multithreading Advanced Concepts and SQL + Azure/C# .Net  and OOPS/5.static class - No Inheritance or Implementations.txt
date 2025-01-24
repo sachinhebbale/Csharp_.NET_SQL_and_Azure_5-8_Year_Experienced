@@ -1,0 +1,9 @@
+In C#, a static class **cannot inherit** from another class (except implicitly from `System.Object`, as all classes do), and it **cannot implement** interfaces. 
+
+Here’s why:
+
+1. **Inheritance**: Static classes are sealed by nature, meaning they cannot be inherited from, and since inheritance involves creating an instance of a derived class, it doesn't make sense to inherit a static class because it cannot be instantiated.
+
+2. **Interfaces**: Since interfaces are intended to define contracts for instance members, and static classes only contain static members, they cannot implement interfaces either. Interfaces require instance members, and static classes don't have any instance members or objects to implement those methods on.
+
+Static classes are designed to be used as containers for static methods, properties, and fields. They're often used for utility or helper functions.

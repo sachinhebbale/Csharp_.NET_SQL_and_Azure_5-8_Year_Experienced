@@ -1,0 +1,85 @@
+In SQL Server, **functions** and **stored procedures** are both used to encapsulate SQL logic, but they serve different purposes and have distinct characteristics. Here’s a comparison of the two:
+
+### SQL Functions
+
+**Functions** in SQL Server are used to perform calculations and return a single value or a table. They can be used in SQL queries like any other expression.
+
+#### Characteristics:
+- **Return Type**: Functions must return a value. This can be a scalar value (single value), a table (table-valued function), or a table row.
+- **Usage in Queries**: Functions can be used in `SELECT`, `WHERE`, and other clauses within a query.
+- **Side Effects**: Functions should not modify database state. They are generally used for computations and should be deterministic (i.e., given the same input, they should always produce the same output).
+- **Invocation**: Functions are invoked directly within a query, and can be part of expressions.
+- **Transaction Control**: Functions do not support transaction control commands (`BEGIN TRANSACTION`, `COMMIT`, `ROLLBACK`).
+
+#### Example of a Scalar Function:
+```sql
+CREATE FUNCTION dbo.CalculateDiscount (@OriginalPrice DECIMAL(10,2))
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+    RETURN @OriginalPrice * 0.10; -- 10% discount
+END;
+```
+
+Usage:
+```sql
+SELECT dbo.CalculateDiscount(100.00) AS DiscountedPrice;
+```
+
+#### Example of a Table-Valued Function:
+```sql
+CREATE FUNCTION dbo.GetEmployeeByDepartment (@DepartmentID INT)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT EmployeeID, FirstName, LastName
+    FROM Employees
+    WHERE DepartmentID = @DepartmentID
+);
+```
+
+Usage:
+```sql
+SELECT * FROM dbo.GetEmployeeByDepartment(5);
+```
+
+### SQL Procedures
+
+**Stored Procedures** are used to encapsulate a sequence of SQL statements that perform a specific task. They can return result sets, output parameters, or status codes.
+
+#### Characteristics:
+- **Return Type**: Procedures do not return values directly but can return result sets, output parameters, or status codes.
+- **Usage**: Procedures are executed with the `EXEC` or `EXECUTE` command and are generally used to perform operations such as data manipulation, business logic, and complex queries.
+- **Side Effects**: Procedures can modify database state (e.g., `INSERT`, `UPDATE`, `DELETE`).
+- **Transaction Control**: Procedures support transaction control commands, which means you can manage transactions within them.
+- **Parameters**: Procedures can accept input parameters and return output parameters.
+
+#### Example:
+```sql
+CREATE PROCEDURE dbo.UpdateEmployeeSalary
+    @EmployeeID INT,
+    @NewSalary DECIMAL(10,2)
+AS
+BEGIN
+    -- Update employee salary
+    UPDATE Employees
+    SET Salary = @NewSalary
+    WHERE EmployeeID = @EmployeeID;
+    
+    -- Optionally return a result set or a status code
+    SELECT 'Salary updated successfully' AS Status;
+END;
+```
+
+Usage:
+```sql
+EXEC dbo.UpdateEmployeeSalary @EmployeeID = 1, @NewSalary = 60000.00;
+```
+
+### Summary
+
+- **Functions**: Best for calculations and data retrieval without side effects. They can be used in queries and must return a value.
+- **Stored Procedures**: Best for performing tasks, managing transactions, and encapsulating business logic. They can return result sets, handle transaction control, and modify data.
+
+Each has its role in database design and can be used effectively depending on the task at hand.

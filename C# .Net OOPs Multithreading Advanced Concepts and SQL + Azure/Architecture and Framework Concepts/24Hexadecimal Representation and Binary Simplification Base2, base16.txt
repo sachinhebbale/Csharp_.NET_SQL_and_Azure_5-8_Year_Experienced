@@ -1,0 +1,57 @@
+### What is Hexadecimal Representation?
+
+**Hexadecimal** is a **base-16 numbering system** that uses 16 symbols to represent values. These symbols are:
+
+- The numbers: `0, 1, 2, 3, 4, 5, 6, 7, 8, 9`
+- The letters: `A, B, C, D, E, F` (which represent the decimal values 10, 11, 12, 13, 14, 15)
+
+In contrast to the **decimal system** (base-10), which uses only the digits `0-9`, hexadecimal uses 16 digits. It’s commonly used in computing because it’s more compact than binary and easily converts to binary.
+
+### Why Use Hexadecimal?
+
+- **Binary Representation** (base-2), which uses only 0s and 1s, can get very long and hard to read.
+- Hexadecimal is a **more human-readable** format, and it’s more concise while still mapping easily to binary.
+
+For example:
+- **Binary**: `1010 1111` (8 bits) in **hexadecimal** becomes `AF`. Each **hex digit** corresponds to **4 binary digits** (a **nibble**), so `AF` represents the binary `1010` for `A` and `1111` for `F`.
+
+### Example of Hexadecimal
+
+Consider the decimal number `255`:
+- In **binary**, this is represented as: `11111111`
+- In **hexadecimal**, this is represented as: `FF`
+
+The reason we use hexadecimal is that each hex digit maps directly to a **group of 4 bits** in binary. This makes it easy to convert between binary and hex.
+
+### Hexadecimal in SHA-256
+
+In cryptographic hash functions like **SHA-256**, the hash output is typically represented in **hexadecimal format** for readability. Since SHA-256 produces a **256-bit** output, this 256-bit result is usually expressed as a **64-character hexadecimal string**.
+
+Each **hexadecimal digit** represents 4 bits (1 nibble), so:
+- **256 bits** ÷ **4 bits per hex digit** = **64 hex digits**
+
+#### Example:
+For the input `"hello"`, the SHA-256 hash is:
+```
+2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+```
+This is a **64-character hexadecimal string** (each character representing 4 bits), and it is the compact representation of the 256-bit binary output.
+
+#### Binary to Hex Conversion Example:
+
+Let’s convert a small binary value to hexadecimal:
+- Binary: `1101 0110 1010 1110`
+- Group the binary digits in blocks of 4:
+  - `1101` → `D`
+  - `0110` → `6`
+  - `1010` → `A`
+  - `1110` → `E`
+- Hexadecimal: `D6AE`
+
+### Summary:
+
+- **Hexadecimal** is a base-16 numbering system, using the digits `0-9` and `A-F`.
+- It is used in computing for its compactness and ease of conversion with binary (base-2).
+- In **SHA-256**, the hash output (256 bits) is usually represented as a **64-character hexadecimal string**, where each character represents 4 bits.
+
+Would you like more examples or details on hexadecimal and binary conversion?

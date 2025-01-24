@@ -1,0 +1,32 @@
+Certainly! Here’s a simple example of native code written in C++:
+
+```cpp
+#include <iostream>
+
+// Function to add two integers
+int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    int x = 5;
+    int y = 10;
+    int result = add(x, y);
+    std::cout << "The sum of " << x << " and " << y << " is " << result << std::endl;
+    return 0;
+}
+```
+
+### Explanation:
+- **Header File Inclusion**: `#include <iostream>` is used to include the standard input-output stream library for console output.
+- **Function Definition**: `int add(int a, int b)` is a simple function that takes two integers as parameters and returns their sum.
+- **Main Function**: `int main()` is the entry point of the program. It initializes two integers, calls the `add` function, and prints the result to the console.
+
+### Compilation:
+You would compile this C++ code with a compiler like `g++` or `cl` (Microsoft Visual C++). For example, using `g++`:
+
+```sh
+g++ -o example example.cpp
+```
+
+This compiles the code into a native executable (`example.exe` on Windows or `example` on Unix-like systems) that runs directly on the hardware without any intermediate runtime.

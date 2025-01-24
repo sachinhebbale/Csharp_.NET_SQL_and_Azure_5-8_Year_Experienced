@@ -1,0 +1,128 @@
+Filters in ASP.NET MVC are attributes that provide a way to execute custom logic before or after an action method runs. They allow developers to perform common tasks like authentication, authorization, caching, logging, exception handling, etc., without cluttering the controller code. Filters can be applied globally, at the controller level, or at the action method level.
+
+### **Types of Filters in ASP.NET MVC**
+There are four main types of filters:
+
+---
+
+### 1. **Authorization Filters**
+   - **Purpose**: Handle authentication and authorization logic.
+   - **Executed**: Before the execution of an action method.
+   - **Common Classes**:
+     - `AuthorizeAttribute`: Ensures the user is authorized to access a resource.
+     - `AllowAnonymousAttribute`: Allows anonymous users to access specific actions.
+   - **Example**:
+     ```csharp
+     [Authorize(Roles = "Admin")]
+     public ActionResult AdminDashboard() {
+         return View();
+     }
+     ```
+
+---
+
+### 2. **Action Filters**
+   - **Purpose**: Run custom logic before and after an action method executes.
+   - **Executed**: Surround the execution of an action method.
+   - **Common Classes**:
+     - `ActionFilterAttribute`: Base class for creating custom action filters.
+   - **Example**:
+     ```csharp
+     public class LogActionFilter : ActionFilterAttribute {
+         public override void OnActionExecuting(ActionExecutingContext filterContext) {
+             // Code to execute before the action
+         }
+         
+         public override void OnActionExecuted(ActionExecutedContext filterContext) {
+             // Code to execute after the action
+         }
+     }
+     ```
+
+---
+
+### 3. **Result Filters**
+   - **Purpose**: Run custom logic before or after the execution of an action result.
+   - **Executed**: Surround the result of the action method (e.g., a view).
+   - **Common Classes**:
+     - Derived from `ActionFilterAttribute`.
+   - **Example**:
+     ```csharp
+     public class ResultFilter : ActionFilterAttribute {
+         public override void OnResultExecuting(ResultExecutingContext filterContext) {
+             // Code before the result is processed
+         }
+         
+         public override void OnResultExecuted(ResultExecutedContext filterContext) {
+             // Code after the result is processed
+         }
+     }
+     ```
+
+---
+
+### 4. **Exception Filters**
+   - **Purpose**: Handle unhandled exceptions that occur during the execution of an action method.
+   - **Executed**: When an exception is thrown during action execution or result rendering.
+   - **Common Classes**:
+     - `HandleErrorAttribute`: Default exception filter provided by MVC.
+   - **Example**:
+     ```csharp
+     [HandleError(View = "ErrorPage")]
+     public ActionResult Index() {
+         throw new Exception("Error!");
+     }
+     ```
+
+---
+
+### **Applying Filters**
+1. **Globally** (applies to all controllers and actions):
+   - Register filters in `FilterConfig.cs`:
+     ```csharp
+     public static void RegisterGlobalFilters(GlobalFilterCollection filters) {
+         filters.Add(new HandleErrorAttribute());
+     }
+     ```
+
+2. **At the Controller Level**:
+   - Apply the filter at the top of the controller class:
+     ```csharp
+     [Authorize]
+     public class AdminController : Controller {
+         public ActionResult Index() {
+             return View();
+         }
+     }
+     ```
+
+3. **At the Action Level**:
+   - Apply the filter to specific action methods:
+     ```csharp
+     [AllowAnonymous]
+     public ActionResult Login() {
+         return View();
+     }
+     ```
+
+---
+
+### **Custom Filters**
+You can create custom filters by inheriting the appropriate base classes (`ActionFilterAttribute`, `AuthorizeAttribute`, etc.) and overriding their methods. Example:
+
+```csharp
+public class CustomLogFilter : ActionFilterAttribute {
+    public override void OnActionExecuting(ActionExecutingContext filterContext) {
+        // Custom logic
+        base.OnActionExecuting(filterContext);
+    }
+}
+```
+
+Apply it as needed:
+```csharp
+[CustomLogFilter]
+public ActionResult About() {
+    return View();
+}
+```

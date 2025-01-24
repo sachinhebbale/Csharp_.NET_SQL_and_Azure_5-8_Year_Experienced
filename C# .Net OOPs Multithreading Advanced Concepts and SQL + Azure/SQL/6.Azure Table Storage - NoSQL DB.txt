@@ -1,0 +1,12 @@
+**Azure Table Storage** is a **NoSQL** database service.
+
+### Key Features of Azure Table Storage:
+- **NoSQL Model**: Azure Table Storage stores large amounts of structured, non-relational data. The data is stored as key-value pairs in a table format, but unlike SQL databases, it doesn't use relations between tables.
+- **Schema-less**: There is no need to define a schema before using the table. Each row (or entity) can have a different structure, allowing for flexibility.
+- **Partitioning**: Data is automatically partitioned to scale out horizontally across multiple servers, which enables high availability and quick access.
+- **Query**: You can query data using the PartitionKey and RowKey, but it doesn't support complex querying, joins, or ACID transactions like a traditional SQL database.
+- **Scalability**: Designed for scalability and high availability, making it suitable for applications that need to store massive amounts of unstructured data.
+
+Azure Table Storage is often used for scenarios like logging, storing user data, and other high-scale NoSQL workloads.
+
+Let me know if you need more details!

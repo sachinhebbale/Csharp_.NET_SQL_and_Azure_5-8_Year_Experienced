@@ -1,0 +1,17 @@
+**Memory** and **latency** are both important concepts in computing, but they refer to different aspects of system performance:
+
+### 1. **Memory**:
+- **Definition**: Refers to the component of a computer that stores data and instructions for the CPU to access quickly. Common types include RAM (Random Access Memory), cache, and persistent storage (like SSDs or HDDs).
+- **Purpose**: It is where data is temporarily held for quick access while the CPU processes tasks. More memory usually allows a system to handle more applications or larger datasets simultaneously.
+- **Capacity**: Measured in bytes (GB, TB, etc.), indicating how much data the memory can hold at once.
+
+### 2. **Latency**:
+- **Definition**: Refers to the time delay between a request for data and the beginning of the actual data transfer. It is often measured in milliseconds (ms) or nanoseconds (ns).
+- **Purpose**: Latency impacts how fast a system can respond to requests. Lower latency means faster response times. 
+- **Examples**: Latency can refer to memory access times, network delays, or disk read/write times. For instance, SSDs have lower latency than HDDs, meaning they respond faster when data is requested.
+
+### Key Differences:
+- **Memory** is about capacity and how much data can be stored.
+- **Latency** is about the speed of accessing that data.
+  
+In simple terms, having more memory means a system can store more data, but lower latency means the system can access or retrieve that data faster. Both are crucial for overall system performance.

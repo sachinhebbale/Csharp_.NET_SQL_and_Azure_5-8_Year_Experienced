@@ -1,0 +1,21 @@
+In .NET, the terms *managed code*, *unmanaged code*, and *native code* refer to different types of code execution and memory management paradigms. Here's a breakdown:
+
+1. **Managed Code**:
+   - **Definition**: Code that runs under the control of the .NET runtime, known as the Common Language Runtime (CLR). This code is executed by the CLR, which provides services such as garbage collection, exception handling, and type safety.
+   - **Characteristics**: Managed code benefits from automatic memory management, which reduces the risk of memory leaks and pointer errors. The CLR also provides a level of security by ensuring that code runs in a controlled environment.
+   - **Example**: C#, F#, and Visual Basic .NET code are considered managed code because they are executed by the CLR.
+
+2. **Unmanaged Code**:
+   - **Definition**: Code that runs directly on the Windows operating system without the intervention of the CLR. It is executed directly by the CPU and is not subject to the runtime services provided by the CLR.
+   - **Characteristics**: Unmanaged code requires manual memory management and does not benefit from CLR features like garbage collection. It can be more difficult to manage and debug because it bypasses many safety features provided by managed code.
+   - **Example**: Code written in C++ (without .NET extensions) is unmanaged code. It directly interacts with system resources and hardware.
+
+3. **Native Code**:
+   - **Definition**: Code that is compiled to run directly on the target platform’s hardware, typically in machine code or assembly language. Native code can be part of both unmanaged and managed environments, depending on how it is used.
+   - **Characteristics**: Native code is platform-specific and often optimized for performance. It can be part of unmanaged code or used in managed code via interoperability features (like P/Invoke) to call functions in native libraries.
+   - **Example**: A C++ application compiled to run directly on Windows is considered native code. However, .NET applications can also use native code libraries through platform invocation (P/Invoke) to call functions from unmanaged DLLs.
+
+In summary:
+- **Managed Code**: Runs under CLR control with automatic memory management (e.g., C#).
+- **Unmanaged Code**: Runs directly on the operating system with manual memory management (e.g., C++).
+- **Native Code**: Machine-level code that can be part of both unmanaged and managed code contexts.

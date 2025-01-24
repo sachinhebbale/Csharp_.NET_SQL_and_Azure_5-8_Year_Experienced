@@ -1,0 +1,77 @@
+Here’s a simple example of an **Azure Function** written in C#, triggered by an HTTP request. This function responds with a personalized greeting.
+
+### Example: HTTP-triggered Azure Function in C#
+
+1. **Create an HTTP-triggered function**:
+   This function will accept a `name` parameter from the query string or the request body and respond with a message.
+
+```csharp
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+
+public static class HttpTriggeredFunction
+{
+    [FunctionName("HttpTriggeredFunction")]
+    public static async Task<IActionResult> Run(
+        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+        ILogger log)
+    {
+        log.LogInformation("C# HTTP trigger function processed a request.");
+
+        // Try to get 'name' from query string
+        string name = req.Query["name"];
+
+        // If 'name' is not in the query string, try to read from request body
+        if (string.IsNullOrEmpty(name))
+        {
+            // Read the request body
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            name = data?.name;
+        }
+
+        // Return a greeting if 'name' is provided, otherwise ask for the name
+        return !string.IsNullOrEmpty(name)
+            ? (ActionResult)new OkObjectResult($"Hello, {name}")
+            : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+    }
+}
+```
+
+### How This Function Works:
+1. **Trigger**: This function is triggered by an HTTP request, either a `GET` or `POST`.
+   - When triggered, it logs the request and tries to extract a parameter called `name`.
+   - If the `name` is passed as a query string (e.g., `?name=John`), the function uses that.
+   - If not, it looks for the `name` in the request body, assuming the body contains JSON (e.g., `{ "name": "John" }`).
+
+2. **Response**:
+   - If a name is found, the function responds with a greeting: `Hello, {name}`.
+   - If no name is found, the function returns a `400 Bad Request` status with a message asking for a name.
+
+### HTTP Trigger Declaration
+```csharp
+[HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req
+```
+- **AuthorizationLevel.Function**: This means the function requires a key to be called.
+- **"get", "post"**: The function can respond to both `GET` and `POST` HTTP requests.
+
+### Test the Function:
+1. Once the function is deployed, you can trigger it with a URL like this:
+   - **GET** request: `https://<your-function-app-name>.azurewebsites.net/api/HttpTriggeredFunction?name=John`
+   - **POST** request: Send a JSON body with a `name` field to the same URL.
+
+### Deploying the Function
+1. **In Visual Studio** or **Azure CLI**, create a new Azure Functions project.
+2. Add this function in your project, then deploy it using the Azure Functions Core Tools or directly from Visual Studio.
+
+### Key Features:
+- **Serverless**: No infrastructure management is needed.
+- **Event-Driven**: The function is only triggered when a request comes in.
+- **Scalable**: Azure automatically scales based on the number of requests.
+
+This is just a basic example, but Azure Functions can be extended with other triggers (like queues, blobs, timers) and integrated with other Azure services (Cosmos DB, Event Grid, etc.).

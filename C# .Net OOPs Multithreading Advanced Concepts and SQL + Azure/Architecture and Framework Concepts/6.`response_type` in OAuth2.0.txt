@@ -1,0 +1,61 @@
+The `response_type` parameter in an OAuth 2.0 authorization request specifies what kind of authorization response the client is expecting from the authorization server. Different values of `response_type` are associated with different OAuth 2.0 grant types or flows.
+
+Here are the most common values for the `response_type` parameter:
+
+### 1. `response_type=code`
+- **Used in**: Authorization Code Flow.
+- **Purpose**: Indicates that the client is requesting an **authorization code**, which it will later exchange for an access token via the token endpoint.
+- **Flow**: 
+  - The client redirects the user to the **authorize endpoint** with `response_type=code`.
+  - The authorization server redirects the user back to the client with an authorization code.
+  - The client exchanges the authorization code for an access token at the **token endpoint**.
+  
+  **Example:**
+  ```plaintext
+  https://authorization-server.com/auth?
+      response_type=code&
+      client_id=CLIENT_ID&
+      redirect_uri=REDIRECT_URI&
+      scope=SCOPE&
+      state=STATE
+  ```
+
+### 2. `response_type=token`
+- **Used in**: Implicit Flow.
+- **Purpose**: Indicates that the client is requesting an **access token** directly in the authorization response, without the need for a separate token request.
+- **Flow**: 
+  - The client sends the user to the **authorize endpoint** with `response_type=token`.
+  - The authorization server redirects the user back to the client with the access token embedded in the URL fragment (`#`).
+  
+  **Example:**
+  ```plaintext
+  https://authorization-server.com/auth?
+      response_type=token&
+      client_id=CLIENT_ID&
+      redirect_uri=REDIRECT_URI&
+      scope=SCOPE&
+      state=STATE
+  ```
+
+### 3. `response_type=code token` (or `code id_token`)
+- **Used in**: Hybrid Flow (OpenID Connect).
+- **Purpose**: Used when the client wants to receive both an **authorization code** and an **access token** or an **ID token** in the authorization response.
+- **Flow**:
+  - The authorization server returns both an authorization code and a token (or an ID token).
+  
+  **Example:**
+  ```plaintext
+  https://authorization-server.com/auth?
+      response_type=code%20token&
+      client_id=CLIENT_ID&
+      redirect_uri=REDIRECT_URI&
+      scope=SCOPE&
+      state=STATE
+  ```
+
+### Summary of Grant Types and Their `response_type`:
+- **Authorization Code Flow**: `response_type=code`
+- **Implicit Flow**: `response_type=token` (or `id_token` for OpenID Connect)
+- **Hybrid Flow (OIDC)**: `response_type=code token`, `response_type=code id_token`
+
+The `response_type` tells the authorization server what kind of response to send back, whether it be an authorization code, an access token, or an ID token.

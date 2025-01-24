@@ -1,0 +1,50 @@
+**Pull** and **Push** are two different communication or data transfer models that describe how information is retrieved or sent between systems. They are common in networking, messaging systems, APIs, and event-driven architectures.
+
+### 1. **Pull Model**:
+- **Definition**: In the pull model, the receiver initiates the request to retrieve information from a sender. The system "pulls" the data when it needs it.
+- **How it works**: The client or consumer continuously or periodically asks (polls) the server or producer for updates or data. If new data is available, it is delivered; otherwise, the client gets no new data until the next request.
+- **Example Use Cases**:
+  - **Web Browsing**: When you load a webpage, your browser sends a request (pulls) for data from a server.
+  - **APIs**: A client pulls data by sending HTTP requests to an API endpoint.
+  - **Email Clients**: Some email clients pull emails from a server when the user clicks "refresh" or at regular intervals.
+  
+- **Pros**:
+  - **Control over requests**: The client decides when and how often to request data.
+  - **Less server load**: The server only responds when requested, reducing continuous data sending.
+  
+- **Cons**:
+  - **Latency**: There may be delays in receiving new information, especially if polling intervals are long.
+  - **Polling overhead**: Frequent polling (checking for new data) can create unnecessary network traffic and server load.
+
+### 2. **Push Model**:
+- **Definition**: In the push model, the sender proactively sends or "pushes" the data to the receiver without waiting for a request. The server pushes data to the client as soon as it is available.
+- **How it works**: The producer or server initiates the data transmission to the consumer or client whenever there is new data or an event to notify.
+- **Example Use Cases**:
+  - **Notifications**: Push notifications on mobile devices are sent by servers as soon as they become available (e.g., message or alert).
+  - **Real-time Messaging**: In chat applications like WhatsApp or Slack, messages are pushed to users instantly.
+  - **Server-Sent Events (SSE)**: A server sends updates to the client automatically as soon as data changes (e.g., stock price updates, live sports scores).
+  
+- **Pros**:
+  - **Instant updates**: No delay in receiving new data or events.
+  - **Efficient**: The server only sends data when necessary, reducing unnecessary traffic compared to constant polling.
+  
+- **Cons**:
+  - **Requires persistent connection**: Some push methods, like WebSockets, require a continuous open connection, which can be resource-intensive.
+  - **Server overhead**: Servers need to keep track of all clients to push updates as they happen.
+
+### Key Differences:
+- **Who initiates the data transfer**: 
+  - In **pull**, the receiver/client initiates the request.
+  - In **push**, the sender/server initiates the transfer.
+  
+- **Timing**: 
+  - **Pull** occurs on demand (when the client requests it).
+  - **Push** occurs in real-time (when new data becomes available).
+
+### Example:
+- **Pull**: An email client checking for new emails every 10 minutes (pulling data from the server).
+- **Push**: An instant messaging app delivering messages immediately as they are received (pushing data to the client).
+
+In summary:
+- Use **pull** when the client needs control over when it requests data.
+- Use **push** when you want to provide real-time updates or notifications with minimal delay.

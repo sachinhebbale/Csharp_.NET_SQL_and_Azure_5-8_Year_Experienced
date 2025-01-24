@@ -1,0 +1,46 @@
+OAuth 2.0 is an authorization framework that allows applications to obtain limited access to user accounts on an HTTP service, such as Facebook, GitHub, or Google. It works by delegating user authentication to the service that hosts the user account and authorizing third-party applications to access the user's account.
+
+### Key Components:
+- **Authorize Endpoint**: The URL endpoint where the user is redirected to log in and authorize access.
+- **Token Endpoint**: The URL endpoint used to exchange an authorization code (or other grant type) for an access token.
+
+### Flow Overview:
+1. **Authorization Request**: The client application redirects the user to the authorization server's **authorize endpoint** to authenticate the user and request authorization. The request typically includes parameters like:
+   - `response_type`: Specifies the grant type (e.g., "code" for Authorization Code flow).
+   - `client_id`: The unique ID of the client app.
+   - `redirect_uri`: The URL to which the authorization server will send the user after authorization.
+   - `scope`: Defines the level of access the application is requesting.
+   - `state`: A unique token to prevent CSRF attacks.
+
+2. **Authorization Response**: After the user authorizes the application, they are redirected back to the client’s **redirect_uri** with either:
+   - An **authorization code** (for authorization code flow) or
+   - An **access token** (for implicit flow).
+
+3. **Token Request**: For flows like the **Authorization Code flow**, the client exchanges the authorization code for an access token by making a POST request to the **token endpoint**. The request typically includes:
+   - `grant_type`: Type of grant used (e.g., "authorization_code").
+   - `code`: The authorization code received from the authorize endpoint.
+   - `redirect_uri`: Must match the one used in the authorization request.
+   - `client_id` and `client_secret`: Credentials of the client application (in confidential clients).
+
+4. **Token Response**: The authorization server responds with an access token (and optionally a refresh token) if the request is valid.
+
+---
+
+### Example Authorize Endpoint:
+```
+https://authorization-server.com/auth?response_type=code&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=SCOPE&state=STATE
+```
+
+### Example Token Endpoint (for exchanging the authorization code):
+```
+POST https://authorization-server.com/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&
+code=AUTH_CODE&
+redirect_uri=REDIRECT_URI&
+client_id=CLIENT_ID&
+client_secret=CLIENT_SECRET
+```
+
+OAuth 2.0 supports different grant types, including Authorization Code, Implicit, Client Credentials, and Password, each of which follows a similar but slightly adjusted process depending on the use case.

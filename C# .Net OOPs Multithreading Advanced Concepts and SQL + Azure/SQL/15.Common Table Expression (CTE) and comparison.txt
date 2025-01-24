@@ -1,0 +1,144 @@
+A **Common Table Expression (CTE)** in SQL is a temporary result set that you can reference within a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement. CTEs are often used to improve readability and simplify complex queries by breaking them down into smaller, more manageable parts.
+
+### Syntax of CTE
+
+Here’s the basic syntax for a **CTE**:
+
+```sql
+WITH cte_name (optional_column_list) AS (
+    -- Your query goes here
+    SELECT columns
+    FROM table
+    WHERE conditions
+)
+-- You can now use the CTE in another query
+SELECT columns
+FROM cte_name
+WHERE conditions;
+```
+
+- **`WITH`**: Introduces the CTE.
+- **`cte_name`**: A name for your CTE, which acts like a temporary table.
+- **`optional_column_list`**: You can optionally specify the column names for the CTE.
+- **`AS`**: Defines the result set of the CTE.
+- **Main Query**: The query that uses the CTE can reference it as though it’s a table.
+
+### Example 1: Simple CTE
+
+Suppose you want to find all employees in a certain department, but you also want to calculate their total compensation by adding their salary and bonus. You can use a CTE to make this calculation easier:
+
+```sql
+WITH CompensationCTE AS (
+    SELECT EmployeeID, EmployeeName, Salary, Bonus, 
+           (Salary + Bonus) AS TotalCompensation
+    FROM Employees
+    WHERE Department = 'HR'
+)
+SELECT EmployeeID, EmployeeName, TotalCompensation
+FROM CompensationCTE;
+```
+
+### Benefits of CTEs
+
+1. **Improved Readability**:
+   - CTEs make complex queries easier to read and maintain by breaking them into parts.
+   
+2. **Reusability**:
+   - You can reference a CTE multiple times within the main query, which is especially useful if you need the same calculation or logic more than once.
+   
+3. **Recursive Queries**:
+   - CTEs are often used for recursive queries, such as when dealing with hierarchical or tree-like data (e.g., finding all employees in a reporting chain).
+
+### Recursive CTEs
+
+A **recursive CTE** is a CTE that references itself. This is useful for hierarchical data, such as organizational charts or parent-child relationships.
+
+**Recursive CTE Syntax**:
+```sql
+WITH RecursiveCTE AS (
+    -- Anchor member (initial result set)
+    SELECT columns
+    FROM table
+    WHERE conditions
+    
+    UNION ALL
+    
+    -- Recursive member (referencing itself)
+    SELECT columns
+    FROM table
+    JOIN RecursiveCTE ON table.column = RecursiveCTE.column
+)
+SELECT *
+FROM RecursiveCTE;
+```
+
+### Example 2: Recursive CTE for Hierarchical Data
+
+Imagine you have an `Employees` table where each employee reports to another employee (except for the CEO, who reports to no one). You want to find the reporting hierarchy for a specific employee:
+
+```sql
+WITH EmployeeHierarchy AS (
+    -- Anchor member: Start with the employee in question
+    SELECT EmployeeID, EmployeeName, ManagerID
+    FROM Employees
+    WHERE EmployeeID = 5  -- Assume employee ID 5 is the starting point
+    
+    UNION ALL
+    
+    -- Recursive member: Find everyone who reports to the current employee
+    SELECT e.EmployeeID, e.EmployeeName, e.ManagerID
+    FROM Employees e
+    JOIN EmployeeHierarchy eh ON e.ManagerID = eh.EmployeeID
+)
+SELECT *
+FROM EmployeeHierarchy;
+```
+
+This recursive CTE will return the hierarchy of employees who report, directly or indirectly, to employee ID 5.
+
+### Example 3: Using Multiple CTEs
+
+You can declare more than one CTE by separating them with commas. Here's an example:
+
+```sql
+WITH EmployeeSalaries AS (
+    SELECT EmployeeID, Salary
+    FROM Employees
+),
+DepartmentStats AS (
+    SELECT DepartmentID, AVG(Salary) AS AvgSalary
+    FROM Employees
+    GROUP BY DepartmentID
+)
+SELECT e.EmployeeID, e.Salary, d.AvgSalary
+FROM EmployeeSalaries e
+JOIN DepartmentStats d ON e.DepartmentID = d.DepartmentID;
+```
+
+### Key Considerations for CTEs
+
+1. **Scope**: CTEs are temporary and only exist for the duration of the query. They are not stored in the database.
+   
+2. **Performance**: While CTEs can improve readability, they may not always improve performance. In some cases, CTEs can even lead to performance issues, especially if the query is large or complex. In those cases, you might want to test performance and compare it with using subqueries or temporary tables.
+
+3. **Recursive CTE Limit**: By default, SQL Server limits recursive CTEs to 100 recursion levels. You can change this with the `OPTION (MAXRECURSION n)` hint.
+
+### When to Use CTEs
+
+- **Simplifying Complex Queries**: When you have complex queries with many joins, conditions, or calculations, using CTEs can make the query easier to read and maintain.
+  
+- **Recursive Queries**: CTEs are ideal for queries that involve hierarchical or recursive data.
+  
+- **Modularity**: If you need to break your query into smaller, logical parts, CTEs provide a way to do this without creating temporary tables.
+
+### Comparison of CTEs, Subqueries, and Temporary Tables
+
+| Feature                | CTE                     | Subquery                  | Temporary Table            |
+|------------------------|-------------------------|---------------------------|----------------------------|
+| **Lifetime**            | Duration of query       | Part of the main query     | Explicitly created and dropped |
+| **Reusability**         | Can be reused in the query | Cannot be reused          | Can be reused across queries |
+| **Readability**         | Improves readability    | Can make queries harder to read | Can improve readability    |
+| **Recursive Queries**   | Supported               | Not supported              | Not directly supported      |
+| **Performance Impact**  | May affect performance  | Generally efficient        | May have disk I/O overhead  |
+
+In summary, **CTEs** are useful for making SQL queries easier to manage and read, especially in complex scenarios or when dealing with hierarchical data. However, they should be used wisely, considering potential performance trade-offs.

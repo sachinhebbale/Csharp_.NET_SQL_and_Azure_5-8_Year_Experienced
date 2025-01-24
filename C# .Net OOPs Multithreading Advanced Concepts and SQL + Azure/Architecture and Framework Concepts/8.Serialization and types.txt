@@ -1,0 +1,122 @@
+Serialization in C# is the process of converting an object into a format that can be easily transported or stored, such as into JSON, XML, or binary formats. The reverse process, where the serialized format is converted back into an object, is called deserialization.
+
+In **C# .NET Core**, there are several types of serialization:
+
+### 1. **Binary Serialization**
+   - Converts an object into a binary format, which is more efficient for storage and transport in terms of size.
+   - Example: Useful in remoting or for persisting complex object graphs.
+
+   ```csharp
+   [Serializable]
+   public class Person
+   {
+       public string Name { get; set; }
+       public int Age { get; set; }
+   }
+
+   BinaryFormatter formatter = new BinaryFormatter();
+   using (FileStream stream = new FileStream("person.dat", FileMode.Create))
+   {
+       Person p = new Person { Name = "John", Age = 30 };
+       formatter.Serialize(stream, p);
+   }
+   ```
+
+   > **Note:** In .NET Core, `BinaryFormatter` is now considered obsolete and insecure for many scenarios. Alternatives like JSON or Protocol Buffers are preferred.
+
+### 2. **XML Serialization**
+   - Converts an object into XML format, which is human-readable and widely supported.
+   - Only public properties and fields can be serialized.
+
+   ```csharp
+   [XmlRoot("Person")]
+   public class Person
+   {
+       public string Name { get; set; }
+       public int Age { get; set; }
+   }
+
+   XmlSerializer serializer = new XmlSerializer(typeof(Person));
+   using (TextWriter writer = new StreamWriter("person.xml"))
+   {
+       Person p = new Person { Name = "John", Age = 30 };
+       serializer.Serialize(writer, p);
+   }
+   ```
+
+### 3. **JSON Serialization**
+   - Converts an object into JSON format, which is lightweight and widely used for web APIs.
+   - Commonly used in modern applications for sending data over the internet.
+   
+   **In .NET Core**, the `System.Text.Json` library is commonly used for this purpose.
+   
+   ```csharp
+   public class Person
+   {
+       public string Name { get; set; }
+       public int Age { get; set; }
+   }
+
+   Person p = new Person { Name = "John", Age = 30 };
+   string jsonString = JsonSerializer.Serialize(p);
+   ```
+
+   > **Note:** Before .NET Core, `Newtonsoft.Json` (JSON.NET) was a popular library for JSON serialization, and it's still widely used in many projects.
+
+### 4. **Custom Serialization**
+   - You can control the serialization process by implementing the `ISerializable` interface, allowing you to define how an object is serialized and deserialized.
+
+   ```csharp
+   [Serializable]
+   public class Person : ISerializable
+   {
+       public string Name { get; set; }
+       public int Age { get; set; }
+
+       public Person() { }
+
+       protected Person(SerializationInfo info, StreamingContext context)
+       {
+           Name = info.GetString("Name");
+           Age = info.GetInt32("Age");
+       }
+
+       public void GetObjectData(SerializationInfo info, StreamingContext context)
+       {
+           info.AddValue("Name", Name);
+           info.AddValue("Age", Age);
+       }
+   }
+   ```
+
+### 5. **Data Contract Serialization**
+   - Used in WCF services.
+   - The class must be explicitly marked with `[DataContract]` and its members with `[DataMember]`.
+
+   ```csharp
+   [DataContract]
+   public class Person
+   {
+       [DataMember]
+       public string Name { get; set; }
+
+       [DataMember]
+       public int Age { get; set; }
+   }
+   ```
+
+### 6. **Protocol Buffers (Protobuf)**
+   - A binary serialization format that is more efficient in terms of size and performance than JSON or XML.
+   - Commonly used in cross-platform applications and microservices.
+
+   > Protobuf is not a built-in feature in .NET Core, but libraries like `Google.Protobuf` can be used for this purpose.
+
+### Serialization Summary
+- **Binary**: Compact, efficient, but not human-readable. Deprecated in .NET Core for security reasons.
+- **XML**: Human-readable, supports cross-platform, but more verbose.
+- **JSON**: Lightweight, web-friendly, commonly used in APIs.
+- **Custom**: Provides control over the serialization process.
+- **DataContract**: Commonly used in WCF services, highly customizable.
+- **Protobuf**: High-performance, cross-platform binary serialization.
+
+Each serialization method serves different use cases depending on the need for efficiency, readability, or platform compatibility.
