@@ -1,0 +1,33 @@
+The terms **unmanaged code** and **native code** are often used interchangeably, but they have subtle differences. Here's a breakdown:
+
+### **1. Unmanaged Code:**
+- **Definition**: Code that is executed directly by the operating system without the supervision of a runtime environment like the .NET CLR (Common Language Runtime) or JVM (Java Virtual Machine).
+- **Key Characteristics**:
+  - Typically written in languages like C or C++.
+  - Requires manual memory management (e.g., `malloc` and `free` in C, `new` and `delete` in C++).
+  - Does not provide automatic garbage collection or other runtime services.
+- **Execution**: Unmanaged code directly interacts with system resources, like memory and CPU, which gives it high performance but also increases the chances of errors like memory leaks or pointer corruption.
+
+---
+
+### **2. Native Code:**
+- **Definition**: Code that has been compiled to the machine code specific to the architecture of the target system (e.g., x86, ARM). It is specific to the operating system and hardware.
+- **Key Characteristics**:
+  - Typically produced by compiling unmanaged languages (like C/C++) or managed languages using a Just-In-Time (JIT) compiler or Ahead-Of-Time (AOT) compilation.
+  - Runs directly on the hardware without translation or interpretation at runtime.
+- **Execution**: Native code is the most optimized form of code for a given system, making it highly efficient.
+
+---
+
+### **Differences**:
+| **Aspect**           | **Unmanaged Code**                                | **Native Code**                              |
+|-----------------------|---------------------------------------------------|----------------------------------------------|
+| **Scope**            | Refers to code that operates outside a runtime.   | Refers to code that is compiled to machine code. |
+| **Compilation**       | Not always native (e.g., unmanaged intermediate bytecode). | Always compiled to machine-specific instructions. |
+| **Examples**          | C, C++, Assembly without runtime supervision.     | Machine instructions for a given CPU architecture. |
+| **Runtime Dependency**| Doesn't rely on managed runtimes like CLR or JVM. | Directly interacts with the CPU, no interpretation layer. |
+
+---
+
+### **Key Overlap**:
+- **Unmanaged code is usually native code**, but native code can also be generated from managed environments (e.g., JIT-compiled .NET or Java applications). This means some native code might still rely on runtime frameworks for execution.
