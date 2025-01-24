@@ -1,0 +1,62 @@
+In ASP.NET Core, **Tag Helpers** are a powerful feature that makes it easier to work with HTML in Razor views. They allow server-side code to participate in creating and rendering HTML elements in a view.
+
+### Key Features of Tag Helpers:
+- **HTML-like syntax**: Unlike traditional HTML helpers (which are method calls), tag helpers look and feel like standard HTML elements.
+- **Attributes-based**: They are activated by special attributes you apply to standard HTML elements.
+- **IntelliSense support**: Tag Helpers are strongly typed, providing compile-time checking and IntelliSense support in Visual Studio.
+
+### Common Built-in Tag Helpers:
+1. **FormTagHelper**: Simplifies form elements like `<form>`. It adds features like automatic anti-forgery token generation.
+2. **InputTagHelper**: Used with `<input>` elements. It helps bind the model data to input fields.
+3. **LabelTagHelper**: Works with `<label>` elements, allowing easy binding with model properties.
+4. **AnchorTagHelper**: Simplifies working with anchor (`<a>`) tags by making routing much easier.
+5. **SelectTagHelper**: Works with `<select>` elements, simplifying model binding with dropdown lists.
+
+### Example of a Tag Helper:
+
+```csharp
+@model UserModel
+
+<form asp-action="SubmitForm">
+    <label asp-for="Username"></label>
+    <input asp-for="Username" class="form-control" />
+
+    <label asp-for="Email"></label>
+    <input asp-for="Email" class="form-control" />
+
+    <button type="submit">Submit</button>
+</form>
+```
+
+In this example:
+- `asp-for` is a Tag Helper that binds the input fields to the properties of the `UserModel` class.
+- `asp-action="SubmitForm"` is used to specify the action method where the form should be submitted.
+
+### Custom Tag Helpers:
+You can also create custom Tag Helpers by creating a class that inherits from `TagHelper`.
+
+Here's an example of a custom Tag Helper that adds a "bold" tag around text:
+
+```csharp
+public class BoldTagHelper : TagHelper
+{
+    public override void Process(TagHelperContext context, TagHelperOutput output)
+    {
+        output.TagName = "strong";
+        output.TagMode = TagMode.StartTagAndEndTag;
+    }
+}
+```
+
+Then, you can use it in your Razor view like this:
+
+```html
+<bold>This text will be bold.</bold>
+```
+
+### Advantages of Tag Helpers:
+- **Separation of concerns**: Keeps your view logic and HTML separate.
+- **Cleaner HTML**: Makes the Razor syntax easier to read and write.
+- **Strongly typed**: Provides compile-time checking, reducing the chances of runtime errors.
+
+Would you like more details on creating custom tag helpers or using specific built-in helpers?

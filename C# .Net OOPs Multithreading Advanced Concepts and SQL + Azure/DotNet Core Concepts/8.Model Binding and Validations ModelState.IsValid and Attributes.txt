@@ -1,0 +1,80 @@
+### **Model Binding** in ASP.NET Core:
+Model Binding is the process of mapping HTTP request data (from query strings, form fields, headers, etc.) to action method parameters in controllers or Razor Pages. When a request is sent to an action method, ASP.NET Core attempts to bind incoming data to the parameters of the method. Model Binding simplifies the process of handling data coming from user inputs, forms, or URLs, making it easier to interact with strongly typed objects.
+
+- **How it works:**
+  - The framework checks the incoming request for values that match the names of the parameters (or properties of complex objects).
+  - ASP.NET Core then attempts to convert the values to the appropriate data types.
+  - If successful, the model is passed to the action method.
+
+- **Sources of Data:**
+  - Query string parameters (`Request.Query`)
+  - Form data (`Request.Form`)
+  - Route data (`Request.RouteValues`)
+  - Headers (`Request.Headers`)
+  - Body (for complex types in JSON/XML)
+  
+- **Example:**
+  ```csharp
+  public IActionResult SubmitOrder(string productName, int quantity)
+  {
+      // 'productName' and 'quantity' are automatically bound from the request data
+  }
+  ```
+
+- **Complex Type Example:**
+  ```csharp
+  public class Order
+  {
+      public string ProductName { get; set; }
+      public int Quantity { get; set; }
+  }
+
+  public IActionResult SubmitOrder(Order order)
+  {
+      // 'order' object is bound from request data
+  }
+  ```
+
+### **Model Validation** in ASP.NET Core:
+Model Validation ensures that the data submitted by a user meets certain rules or constraints before being processed. ASP.NET Core automatically validates models bound to action methods, based on the validation attributes applied to properties of model classes.
+
+- **How it works:**
+  - Validation is typically performed after model binding.
+  - The framework inspects the model and checks any validation attributes (like `[Required]`, `[StringLength]`, etc.).
+  - If validation fails, the framework adds errors to the `ModelState` dictionary, and developers can check if `ModelState.IsValid` is true or false before processing the model.
+
+- **Common Validation Attributes:**
+  - `[Required]`: Ensures the field is not null or empty.
+  - `[StringLength]`: Limits the length of a string property.
+  - `[Range]`: Ensures the value falls within a specified range.
+  - `[EmailAddress]`: Validates that the input is a valid email format.
+  - `[RegularExpression]`: Validates input against a regular expression.
+
+- **Example:**
+  ```csharp
+  public class Order
+  {
+      [Required]
+      public string ProductName { get; set; }
+
+      [Range(1, 100)]
+      public int Quantity { get; set; }
+  }
+
+  public IActionResult SubmitOrder(Order order)
+  {
+      if (ModelState.IsValid)
+      {
+          // Process the valid order
+      }
+      else
+      {
+          // Return validation errors
+          return View(order);
+      }
+  }
+  ```
+
+### **Automatic Validation in ASP.NET Core:**
+ASP.NET Core performs model validation automatically when model binding occurs. If validation fails, you can use `ModelState` to return errors to the user.
+

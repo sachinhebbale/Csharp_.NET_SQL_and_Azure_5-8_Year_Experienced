@@ -1,0 +1,63 @@
+In my Asp.Net Core App I need a singleton service that I can reuse for the lifetime of the application. To construct it, I need a DbContext (from the EF Core), but it is a scoped service and not thread safe.
+
+Therefore I am using the following pattern to construct my singleton service. It looks kinda hacky, therefore I was wondering whether this is an acceptable approach and won't lead to any problems?
+
+services.AddScoped<IPersistedConfigurationDbContext, PersistedConfigurationDbContext>();
+services.AddSingleton<IPersistedConfigurationService>(s =>
+{
+    ConfigModel currentConfig;
+    using (var scope = s.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<IPersistedConfigurationDbContext>();
+        currentConfig = dbContext.retrieveConfig();            
+    }
+    return new PersistedConfigurationService(currentConfig);
+});
+
+...
+
+public class ConfigModel
+{
+    string configParam { get; set; }
+}
+
+
+========================================================
+
+
+What you're doing is not good and can definitely lead to issues. Since this is being done in the service registration, the scoped service is going to be retrieve once when your singleton is first injected. In other words, this code here is only going to run once for the lifetime of the service you're registering, which since it's a singleton, means it's only going to happen once, period. Additionally, the context you're injecting here only exists within the scope you've created, which goes away as soon as the using statement closes. As such, by the time you actually try to use the context in your singleton, it will have been disposed, and you'll get an ObjectDisposedException.
+
+If you need to use a scoped service inside a singleton, then you need to inject IServiceProvider into the singleton. Then, you need to create a scope and pull out your context when you need to use it, and this will need to be done every time you need to use it. For example:
+
+public class PersistedConfigurationService : IPersistedConfigurationService
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public PersistedConfigurationService(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public async Task Foo()
+    {
+        using (var scope = _serviceProvider.CreateScope())
+        {
+             var context = scope.ServiceProvider.GetRequiredService<IPersistedConfigurationDbContext>();
+             // do something with context
+        }
+    }
+}
+Just to emphasize, again, you will need to do this in each method that needs to utilize the scoped service (your context). You cannot persist this to an ivar or something. If you're put off by the code, you should be, as this is an antipattern. If you must get a scoped service in a singleton, you have no choice, but more often than not, this is a sign of bad design. If a service needs to use scoped services, it should almost invariably be scoped itself, not singleton. There's only a few cases where you truly need a singleton lifetime, and those mostly revolve around dealing with semaphores or other state that needs to be persisted throughout the life of the application. Unless there's a very good reason to make your service a singleton, you should opt for scoped in all cases; scoped should be the default lifetime unless you have a reason to do otherwise.
+
+===============================================================================================================
+
+
+Although Dependency injection: Service lifetimes documentation in ASP.NET Core says:
+
+It's dangerous to resolve a scoped service from a singleton. It may cause the service to have incorrect state when processing subsequent requests.
+
+But in your case this is not the issue. Actually you are not resolving the scoped service from singleton. Its just getting an instance of scoped service from singleton whenever it requires. So your code should work properly without any disposed context error!
+
+But another potential solution can be using IHostedService. Here is the details about it:
+
+Consuming a scoped service in a background task (IHostedService)

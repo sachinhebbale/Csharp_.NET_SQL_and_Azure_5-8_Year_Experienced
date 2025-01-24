@@ -1,0 +1,54 @@
+The **cross-platform nature of .NET Core** comes from its architecture and design, which address limitations of the **.NET Framework**. Here’s an explanation of why .NET Core is inherently cross-platform while .NET Framework isn't:
+
+---
+
+### **1. Platform-Dependent Design of .NET Framework**
+- **Windows-Specific Ties**: The .NET Framework is deeply integrated with Windows, relying heavily on:
+  - **Windows APIs** for system-level operations.
+  - **Windows-only technologies** like WPF, Windows Forms, and IIS (Internet Information Services).
+- **Mono Framework**: While an open-source framework like Mono attempted to bring .NET Framework features to other platforms, it was a workaround, not a native solution.
+
+---
+
+### **2. Cross-Platform by Design in .NET Core**
+- **Runtime Independence**:
+  - .NET Core uses a platform-agnostic runtime called the **CoreCLR** (an evolution of the CLR).
+  - This runtime has been implemented for multiple platforms, including **Windows, macOS, and Linux**.
+  
+- **Abstracted System Calls**:
+  - Instead of relying on Windows-specific APIs, .NET Core uses **platform-agnostic abstractions**. For example:
+    - File operations use **cross-platform libraries**.
+    - Networking, threading, and other operations are handled in a way that works seamlessly across OSes.
+
+- **Self-Contained Deployment**:
+  - .NET Core applications can be bundled with their runtime and dependencies in a **self-contained deployment**, meaning they can run on any supported platform without relying on system-wide installations of the runtime.
+
+---
+
+### **3. Unified Development Model**
+.NET Core supports modern development practices like:
+- **ASP.NET Core** for web applications that can run on Linux-based servers (e.g., Nginx, Apache).
+- **Docker and Containers**, allowing you to build, ship, and run applications across any platform supporting containers.
+- **Cross-platform command-line tools**, enabling development on macOS, Linux, and Windows.
+
+---
+
+### **4. Why This Can’t Be Fully Achieved in .NET Framework**
+- **Legacy Dependencies**: The .NET Framework relies on Windows libraries and components (e.g., the Windows Registry, Windows Forms, and WPF) that are not available on non-Windows systems.
+- **Monolithic Architecture**: The .NET Framework is a single, large framework tied to Windows. It lacks the modularity to strip down components for use in other platforms.
+
+---
+
+### **5. Key Features Making .NET Core Cross-Platform**
+| **Feature**                   | **Explanation**                                                                 |
+|--------------------------------|---------------------------------------------------------------------------------|
+| **Runtime Abstraction**        | CoreCLR enables applications to run on multiple platforms.                      |
+| **BCL (Base Class Library)**   | The .NET Core BCL is designed to be platform-neutral.                          |
+| **Open Source**                | Community contributions ensure wide platform support.                          |
+| **Docker Support**             | Build and deploy .NET Core apps on containers running any OS.                  |
+| **Cross-Platform SDK/CLI**     | Tools like `dotnet` CLI work seamlessly on all major platforms.                 |
+
+---
+
+### **In Summary**
+While the **.NET Framework** is Windows-centric and tied to its architecture, **.NET Core** was designed from the ground up to be cross-platform, modular, and lightweight. This fundamental difference makes .NET Core the go-to framework for building applications that work across operating systems.

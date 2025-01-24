@@ -1,0 +1,153 @@
+**FluentMigrator** is a .NET library that provides a fluent interface for managing database migrations in a structured and versioned way. It allows you to define your database schema changes (e.g., creating tables, modifying columns, adding indexes) using C# code, offering more flexibility and control compared to Entity Framework Migrations.
+
+With FluentMigrator, you can:
+- Apply schema changes in a consistent way across multiple databases.
+- Rollback (downgrade) schema changes.
+- Organize and version your database migrations for better maintainability.
+
+### Key Concepts
+
+1. **Migration**: A class that defines the operations to be applied to the database (e.g., creating or modifying a table).
+2. **Versioning**: Migrations are applied in a sequence based on version numbers.
+3. **Up/Down Methods**: Every migration contains two main methods:
+   - **Up()**: Defines the operations to apply (upgrade) the migration.
+   - **Down()**: Defines the operations to revert (downgrade) the migration.
+
+### Setting Up FluentMigrator
+
+#### Step 1: Install FluentMigrator NuGet Package
+
+You need to install the FluentMigrator package and the runner for the database you're using. For example, for SQL Server, you can run:
+
+```bash
+dotnet add package FluentMigrator
+dotnet add package FluentMigrator.Runner
+dotnet add package FluentMigrator.Runner.SqlServer
+```
+
+#### Step 2: Create a Migration
+
+A migration class should inherit from `Migration` and implement the `Up()` and `Down()` methods to define what should be done when applying and reverting the migration.
+
+#### Example: Creating a Simple Table
+
+```csharp
+using FluentMigrator;
+
+[Migration(202309070001)] // Version number (unique)
+public class CreateProductTable : Migration
+{
+    public override void Up()
+    {
+        Create.Table("Products")
+              .WithColumn("ProductId").AsInt32().PrimaryKey().Identity()
+              .WithColumn("Name").AsString(255).NotNullable()
+              .WithColumn("Price").AsDecimal().NotNullable();
+    }
+
+    public override void Down()
+    {
+        Delete.Table("Products");
+    }
+}
+```
+
+- **Up()**: Defines the schema changes for upgrading, in this case creating a `Products` table.
+- **Down()**: Defines the reverse of the changes (used for downgrading), in this case, deleting the table.
+
+#### Step 3: Configure FluentMigrator Runner
+
+You need to configure FluentMigrator to use a migration runner in your application. Below is an example using `IServiceCollection` to configure FluentMigrator in a .NET Core application.
+
+```csharp
+using FluentMigrator.Runner;
+using Microsoft.Extensions.DependencyInjection;
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        // Set up the DI container
+        var serviceProvider = CreateServices();
+
+        // Run the migrations
+        using (var scope = serviceProvider.CreateScope())
+        {
+            UpdateDatabase(scope.ServiceProvider);
+        }
+    }
+
+    private static IServiceProvider CreateServices()
+    {
+        return new ServiceCollection()
+            .AddFluentMigratorCore()
+            .ConfigureRunner(rb => rb
+                .AddSqlServer()
+                .WithGlobalConnectionString("YourConnectionString")
+                .ScanIn(typeof(CreateProductTable).Assembly).For.Migrations())
+            .AddLogging(lb => lb.AddFluentMigratorConsole())
+            .BuildServiceProvider(false);
+    }
+
+    private static void UpdateDatabase(IServiceProvider serviceProvider)
+    {
+        var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
+        runner.MigrateUp(); // This applies migrations
+    }
+}
+```
+
+### Step 4: Running the Migrations
+
+Once everything is set up, run the application and the migration will be executed automatically. FluentMigrator tracks the migration history in a table (`VersionInfo` by default), ensuring that migrations are applied only once and in the correct order.
+
+### Downgrading (Rolling Back) Migrations
+
+To roll back a migration, you can call:
+
+```csharp
+runner.MigrateDown(versionNumber); // Roll back to a specific version
+```
+
+This will undo any migrations after the specified version, applying the `Down()` method.
+
+### Example of More Complex Migrations
+
+#### Adding a New Column to an Existing Table
+
+```csharp
+[Migration(202309070002)]
+public class AddCreatedAtColumnToProducts : Migration
+{
+    public override void Up()
+    {
+        Alter.Table("Products")
+             .AddColumn("CreatedAt").AsDateTime().NotNullable().WithDefault(SystemMethods.CurrentDateTime);
+    }
+
+    public override void Down()
+    {
+        Delete.Column("CreatedAt").FromTable("Products");
+    }
+}
+```
+
+### Features of FluentMigrator
+
+1. **Strongly Typed Schema Changes**: Fluent API makes it easier to write and read migrations.
+2. **Version Control**: Every migration has a unique version number, making it easy to track and apply changes in a sequence.
+3. **Rollback Support**: You can easily roll back migrations using the `Down()` method.
+4. **Database Independence**: FluentMigrator supports various database engines (SQL Server, MySQL, PostgreSQL, etc.).
+5. **Migration Management**: Migration operations like `Create.Table`, `Alter.Table`, `Delete.Table` are provided out-of-the-box for managing schemas.
+
+### FluentMigrator Commands
+
+You can run FluentMigrator from the command line as well. FluentMigrator comes with a command-line runner.
+
+```bash
+FluentMigrator.Migrate.exe --conn "YourConnectionString" --db "sqlserver" --target assemblyContainingMigrations.dll
+```
+
+### Conclusion
+
+FluentMigrator is a flexible and powerful alternative to Entity Framework Migrations, especially useful in scenarios where you need more granular control over schema changes or are using databases that don't have direct support with EF Core. It supports both **Up()** (for applying migrations) and **Down()** (for rolling back migrations), making schema management easier and more structured.

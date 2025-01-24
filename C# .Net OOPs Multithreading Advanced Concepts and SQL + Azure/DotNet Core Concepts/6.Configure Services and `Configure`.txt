@@ -1,0 +1,58 @@
+In ASP.NET Core, `Configure` and `ConfigureServices` are two key methods in the **Startup.cs** file that play a central role in the application's initialization and configuration process. Here’s what each method does:
+
+### 1. `ConfigureServices(IServiceCollection services)`
+- This method is where you **register services** with the Dependency Injection (DI) container.
+- You add services that your application will use during its runtime, such as database contexts, logging, authentication, and custom services.
+- The services are typically configured with **lifetime options** (such as `Transient`, `Scoped`, or `Singleton`).
+  
+Example:
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    // Add services to the container
+    services.AddControllersWithViews(); // Adding MVC services
+    services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))); // Adding a database context
+    services.AddSingleton<IMyService, MyService>(); // Adding a custom service
+}
+```
+The `ConfigureServices` method sets up the services that will later be used in the request pipeline.
+
+### 2. `Configure(IApplicationBuilder app, IWebHostEnvironment env)`
+- This method defines how the application will **handle HTTP requests**. It sets up the **middleware pipeline**.
+- Middleware are components that process HTTP requests and responses in sequence, such as routing, authentication, authorization, error handling, and static file serving.
+  
+Example:
+```csharp
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    if (env.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage(); // Shows detailed exception information in development
+    }
+    else
+    {
+        app.UseExceptionHandler("/Home/Error"); // Generic error page in production
+        app.UseHsts(); // Enforces HTTPS
+    }
+    
+    app.UseHttpsRedirection(); // Redirects HTTP requests to HTTPS
+    app.UseStaticFiles(); // Serves static files from wwwroot folder
+    app.UseRouting(); // Adds routing to the request pipeline
+    app.UseAuthentication(); // Adds authentication middleware
+    app.UseAuthorization(); // Adds authorization middleware
+
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
+    });
+}
+```
+
+- The `Configure` method sets up middleware to handle HTTP requests, like routing, exception handling, and static files.
+
+In summary:
+- **`ConfigureServices`**: Used for registering services into the DI container.
+- **`Configure`**: Defines the middleware pipeline that handles incoming requests and responses.

@@ -1,0 +1,69 @@
+Here’s a comprehensive comparison between **.NET Framework** and **.NET Core**:
+
+---
+
+### **1. Overview:**
+| **Aspect**              | **.NET Framework**                                | **.NET Core**                                  |
+|-------------------------|--------------------------------------------------|-----------------------------------------------|
+| **Release**             | Introduced in 2002.                              | Introduced in 2016.                           |
+| **Purpose**             | Designed primarily for building Windows desktop and server applications. | A cross-platform, modern framework designed for building applications for Windows, macOS, Linux, and more. |
+
+---
+
+### **2. Cross-Platform Support:**
+| **.NET Framework**                                | **.NET Core**                                  |
+|---------------------------------------------------|-----------------------------------------------|
+| Supports **Windows only**.                        | Fully **cross-platform** (Windows, macOS, Linux). |
+
+---
+
+### **3. Performance:**
+| **.NET Framework**                                | **.NET Core**                                  |
+|---------------------------------------------------|-----------------------------------------------|
+| Performance improvements limited by legacy architecture. | High-performance, lightweight, and optimized for modern workloads. |
+
+---
+
+### **4. Deployment:**
+| **.NET Framework**                                | **.NET Core**                                  |
+|---------------------------------------------------|-----------------------------------------------|
+| Applications depend on the version of the .NET Framework installed on the system. | Applications can be **self-contained** with no dependency on the system's .NET installation. |
+
+---
+
+### **5. Open Source:**
+| **.NET Framework**                                | **.NET Core**                                  |
+|---------------------------------------------------|-----------------------------------------------|
+| Largely proprietary with some open-source components. | Fully **open-source** and actively developed on GitHub. |
+
+---
+
+### **6. Use Cases:**
+| **.NET Framework**                                | **.NET Core**                                  |
+|---------------------------------------------------|-----------------------------------------------|
+| Suitable for legacy applications or Windows-based applications like WPF and Windows Forms. | Ideal for modern, scalable, and cross-platform applications, including web, cloud, and IoT. |
+
+---
+
+### **7. ASP.NET Variants:**
+| **.NET Framework**                                | **.NET Core**                                  |
+|---------------------------------------------------|-----------------------------------------------|
+| Uses **ASP.NET** for building web applications.   | Uses **ASP.NET Core**, which is faster, modular, and cross-platform. |
+
+---
+
+### **8. Latest Development:**
+Microsoft is now focusing on **.NET 6/7/8 (the unified platform)**, which integrates the best features of .NET Core and supersedes both .NET Framework and older .NET Core versions.
+
+---
+
+### **Key Differences in Summary:**
+| **Feature**             | **.NET Framework**                 | **.NET Core**                      |
+|-------------------------|------------------------------------|-------------------------------------|
+| **Cross-platform**      | No                                 | Yes                                |
+| **Performance**         | Good, but limited by legacy design | High                               |
+| **Open Source**         | Partially                         | Fully                              |
+| **Modularity**          | Monolithic                        | Modular (lightweight assemblies)   |
+| **Future-proof**        | Legacy                            | Actively developed and future-ready|
+
+If you're starting a new project, **.NET Core (or .NET 6/7)** is the way to go unless you have specific requirements tied to **Windows-only** or legacy **.NET Framework** features.

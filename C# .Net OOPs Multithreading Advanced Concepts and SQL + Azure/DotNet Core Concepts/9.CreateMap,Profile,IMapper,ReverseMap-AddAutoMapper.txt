@@ -1,0 +1,135 @@
+AutoMapper is a popular object-to-object mapping library used in .NET Core to simplify the process of mapping objects between different models, particularly between Data Transfer Objects (DTOs) and domain models. It helps avoid repetitive code and reduces the manual work of copying property values between objects, especially when dealing with larger projects.
+
+### Key Features of AutoMapper:
+1. **Convention-Based Mapping**: AutoMapper maps properties based on matching property names and types by convention. This means if two objects have properties with the same name and compatible types, they will automatically be mapped.
+2. **Custom Mapping**: You can customize mappings if property names differ or if special transformations are needed.
+3. **Projection**: Supports mapping to queryable types like `IQueryable` or `IEnumerable`.
+4. **Nested Mapping**: It can handle nested objects and map complex hierarchies.
+5. **Flattening**: AutoMapper can flatten complex models, for example, combining properties from child objects into the parent object.
+
+### Basic Setup in .NET Core:
+
+1. **Install AutoMapper**:
+   You can add the AutoMapper package via NuGet in your .NET Core project.
+
+   ```bash
+   Install-Package AutoMapper
+   ```
+
+2. **Create a Mapping Profile**:
+   The mapping profile defines the mapping configurations between source and destination objects.
+
+   ```csharp
+   public class MappingProfile : Profile
+   {
+       public MappingProfile()
+       {
+           CreateMap<SourceModel, DestinationModel>();
+           // Custom mapping example
+           CreateMap<SourceModel, DestinationModel>()
+               .ForMember(dest => dest.PropertyName, opt => opt.MapFrom(src => src.OtherPropertyName));
+       }
+   }
+   ```
+
+3. **Register AutoMapper in Dependency Injection**:
+   After creating the mapping profiles, you need to register AutoMapper in the service collection.
+
+   ```csharp
+   public void ConfigureServices(IServiceCollection services)
+   {
+       services.AddAutoMapper(typeof(Startup));
+   }
+   ```
+
+4. **Using AutoMapper**:
+   Once registered, AutoMapper can be injected and used in controllers or services.
+
+   ```csharp
+   public class ExampleService
+   {
+       private readonly IMapper _mapper;
+
+       public ExampleService(IMapper mapper)
+       {
+           _mapper = mapper;
+       }
+
+       public DestinationModel MapExample(SourceModel source)
+       {
+           return _mapper.Map<DestinationModel>(source);
+       }
+   }
+   ```
+
+### Example of AutoMapper Usage:
+Let’s say you have the following two classes:
+
+```csharp
+public class UserDto
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+}
+
+public class User
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string EmailAddress { get; set; }
+}
+```
+
+To map `UserDto` to `User` and handle the different property names, you would create a profile:
+
+```csharp
+public class UserProfile : Profile
+{
+    public UserProfile()
+    {
+        CreateMap<UserDto, User>()
+            .ForMember(dest => dest.EmailAddress, opt => opt.MapFrom(src => src.Email));
+    }
+}
+```
+
+You can now inject and use the mapping service:
+
+```csharp
+public class UserService
+{
+    private readonly IMapper _mapper;
+
+    public UserService(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
+
+    public User ConvertToUser(UserDto userDto)
+    {
+        return _mapper.Map<User>(userDto);
+    }
+}
+```
+
+### Advanced Features:
+- **Reverse Mapping**: AutoMapper can handle bidirectional mapping automatically with `ReverseMap()`:
+
+   ```csharp
+   CreateMap<UserDto, User>().ReverseMap();
+   ```
+
+- **Conditional Mapping**: You can apply conditions based on specific values.
+
+   ```csharp
+   CreateMap<UserDto, User>()
+       .ForMember(dest => dest.EmailAddress, opt => opt.Condition(src => !string.IsNullOrEmpty(src.Email)));
+   ```
+
+### Benefits of Using AutoMapper:
+- Reduces boilerplate code.
+- Ensures consistency in object transformation.
+- Easy to configure and integrate with ASP.NET Core’s DI container.
+
+Would you like to explore a more advanced feature or a specific use case?

@@ -1,0 +1,110 @@
+Razor Pages is a feature of ASP.NET Core that makes it easier to build dynamic, data-driven web pages. It provides a page-focused framework that is designed to be a simpler and more streamlined alternative to the traditional MVC pattern in ASP.NET Core.
+
+### Key Concepts of Razor Pages in .NET Core
+
+1. **Page Model (Code-behind)**
+   - Each Razor Page has an associated "PageModel" class which acts like the controller in MVC. It handles the logic for the page, such as event handling and data processing.
+   - This class typically inherits from `PageModel` and is responsible for managing the state of the page and interacting with any services, databases, or other business logic.
+
+2. **Routing**
+   - Razor Pages use a simple, convention-based routing system, where the physical file structure of the pages in the project determines the URL structure.
+
+3. **Two-way data binding**
+   - You can bind properties in the PageModel to elements in the Razor page, which allows for two-way data binding. This is particularly useful for form submissions, as the data in form elements can be bound directly to properties in the PageModel.
+
+4. **Handlers**
+   - Instead of using traditional HTTP verbs like `GET` and `POST`, Razor Pages use handler methods. These methods start with `OnGet`, `OnPost`, etc., and map to specific actions depending on how the page is requested.
+     ```csharp
+     public class IndexModel : PageModel
+     {
+         public void OnGet()
+         {
+             // Logic for GET request
+         }
+         
+         public void OnPost()
+         {
+             // Logic for POST request
+         }
+     }
+     ```
+
+5. **Razor Syntax**
+   - Razor Pages use Razor syntax for embedding C# code in HTML. The syntax uses `@` for C# expressions.
+     ```html
+     <h1>Hello, @Model.Name!</h1>
+     ```
+
+6. **Dependency Injection**
+   - Like other ASP.NET Core features, Razor Pages fully supports dependency injection, which allows services to be injected into the PageModel for use within the page.
+     ```csharp
+     public class IndexModel : PageModel
+     {
+         private readonly ILogger<IndexModel> _logger;
+
+         public IndexModel(ILogger<IndexModel> logger)
+         {
+             _logger = logger;
+         }
+
+         public void OnGet()
+         {
+             _logger.LogInformation("Page loaded");
+         }
+     }
+     ```
+
+### Folder Structure
+The Razor Pages convention requires you to put the `.cshtml` pages inside a folder named `Pages`. Each `.cshtml` file can have an accompanying `.cshtml.cs` file for the PageModel.
+
+Example:
+```
+Pages/
+   Index.cshtml
+   Index.cshtml.cs
+   About.cshtml
+   About.cshtml.cs
+```
+
+### Advantages of Razor Pages
+- **Simplicity**: Razor Pages are simpler to use than MVC when building basic web pages.
+- **Page-centric**: Each page has a dedicated model, making it easier to handle the UI logic for that specific page.
+- **Lightweight**: It requires less ceremony and boilerplate than the traditional MVC pattern, especially for simple applications.
+
+### Example Razor Page
+
+**Index.cshtml**
+```html
+@page
+@model IndexModel
+
+<h1>Welcome, @Model.Name!</h1>
+
+<form method="post">
+    <label for="name">Enter your name:</label>
+    <input type="text" id="name" name="Name" />
+    <input type="submit" value="Submit" />
+</form>
+```
+
+**Index.cshtml.cs**
+```csharp
+public class IndexModel : PageModel
+{
+    [BindProperty]
+    public string Name { get; set; }
+
+    public void OnGet()
+    {
+        // Initial GET request
+    }
+
+    public void OnPost()
+    {
+        // Handle POST request when form is submitted
+        // The Name property will automatically be bound to the form input
+    }
+}
+```
+
+Razor Pages is great for applications that need a simpler, page-centric model compared to the traditional MVC approach. It reduces complexity and speeds up development, especially for smaller applications or pages that don’t need extensive customization.

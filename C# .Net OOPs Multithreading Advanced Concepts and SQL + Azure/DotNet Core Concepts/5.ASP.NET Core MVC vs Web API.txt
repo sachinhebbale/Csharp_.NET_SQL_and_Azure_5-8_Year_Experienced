@@ -1,0 +1,43 @@
+ASP.NET Core MVC and Web API are both frameworks within ASP.NET Core that are used to build web applications, but they are designed for different purposes. Here's a comparison of the two:
+
+### 1. **Purpose**
+   - **ASP.NET Core MVC**: Primarily used to build web applications with server-rendered views (HTML) using the Model-View-Controller pattern. It is ideal for creating dynamic, HTML-based web pages.
+   - **ASP.NET Core Web API**: Used to create RESTful services or APIs that return data, usually in JSON or XML format, for consumption by client applications (e.g., web, mobile, or desktop applications). It's focused on exposing data, not rendering views.
+
+### 2. **Request/Response Format**
+   - **MVC**: Works with both views and data. It can return HTML views, partial views, or data (like JSON or XML) based on the request.
+   - **Web API**: Primarily deals with returning data (JSON, XML, etc.). It is designed to be used by other applications or services, not directly by users in a browser.
+
+### 3. **Routing**
+   - **MVC**: Typically uses conventional routing, where routes are mapped to controller actions that render views.
+     Example route: `/Products/Details/5` where "Products" is the controller and "Details" is the action.
+   - **Web API**: Typically uses attribute-based routing, which provides more control over how routes are mapped to specific API actions.
+     Example route: `[HttpGet("api/products/{id}")]`.
+
+### 4. **Return Types**
+   - **MVC**: Controller actions often return `IActionResult`, which could be a view (e.g., `View()`) or data (e.g., `Json()`).
+   - **Web API**: Controller actions usually return data (e.g., `IActionResult` or a specific type like `IEnumerable<Product>`), primarily serialized into JSON or XML.
+
+### 5. **Controller Base Class**
+   - **MVC**: Derives from the `Controller` base class, which includes helper methods for rendering views (e.g., `View()`, `PartialView()`, `RedirectToAction()`).
+   - **Web API**: Derives from the `ControllerBase` class, which includes only the helpers for handling HTTP responses (e.g., `Ok()`, `BadRequest()`, `NotFound()`), without view rendering.
+
+### 6. **Action Methods**
+   - **MVC**: Action methods are designed to return views or data to render HTML pages.
+   - **Web API**: Action methods typically return data formatted as JSON or XML, and focus on handling HTTP methods like GET, POST, PUT, DELETE.
+
+### 7. **Use Case**
+   - **MVC**: Best suited for applications where the main interaction is via HTML pages served from the server (e.g., traditional web apps).
+   - **Web API**: Best suited for applications where the client (e.g., a single-page application, mobile app) interacts with the server through APIs to retrieve or update data.
+
+### 8. **Separation of Concerns**
+   - **MVC**: Contains both the logic for handling requests and returning HTML views. It combines the responsibilities of handling both UI and data logic.
+   - **Web API**: Focuses purely on serving data to clients, making it easier to follow REST principles and decouple the client-server interaction.
+
+### 9. **Response Formats**
+   - **MVC**: Returns HTML views by default but can also return data in JSON, XML, or other formats.
+   - **Web API**: By default returns data in JSON format, but can be configured to return XML or other formats depending on the client’s request.
+
+---
+
+In short, **ASP.NET Core MVC** is for building web applications with user interfaces (HTML), while **ASP.NET Core Web API** is designed for building RESTful services that provide data to client applications. They can both coexist in the same ASP.NET Core application if needed.

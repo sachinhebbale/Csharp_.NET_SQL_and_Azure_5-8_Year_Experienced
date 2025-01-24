@@ -1,0 +1,182 @@
+**FluentValidation** is a popular .NET library for building strongly-typed validation rules for your models or objects using a fluent interface. It is typically used in scenarios where you want to validate the input or model data, such as validating user input in web forms, APIs, or any other data models.
+
+FluentValidation is highly flexible and provides a clean way to define validation logic that is easy to read and maintain. It integrates well with ASP.NET Core, allowing for seamless model validation in controllers.
+
+### Setting Up FluentValidation
+
+#### Step 1: Install FluentValidation NuGet Package
+
+To start using FluentValidation, install the package from NuGet. You can do this via the .NET CLI:
+
+```bash
+dotnet add package FluentValidation
+```
+
+If you're using FluentValidation with ASP.NET Core, install the FluentValidation ASP.NET Core package:
+
+```bash
+dotnet add package FluentValidation.AspNetCore
+```
+
+#### Step 2: Create a Model
+
+Create a simple model class that you want to validate.
+
+```csharp
+public class Customer
+{
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public int Age { get; set; }
+}
+```
+
+#### Step 3: Create a Validator
+
+Create a validator class for your model by inheriting from `AbstractValidator<T>`, where `T` is your model type. Inside the class, define the validation rules using the fluent interface.
+
+```csharp
+using FluentValidation;
+
+public class CustomerValidator : AbstractValidator<Customer>
+{
+    public CustomerValidator()
+    {
+        RuleFor(customer => customer.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .Length(2, 50).WithMessage("Name must be between 2 and 50 characters.");
+
+        RuleFor(customer => customer.Email)
+            .NotEmpty().WithMessage("Email is required.")
+            .EmailAddress().WithMessage("A valid email address is required.");
+
+        RuleFor(customer => customer.Age)
+            .InclusiveBetween(18, 60).WithMessage("Age must be between 18 and 60.");
+    }
+}
+```
+
+In this example:
+- `RuleFor` specifies which property of the model you are validating.
+- You chain validation methods such as `NotEmpty()`, `Length()`, `EmailAddress()`, and `InclusiveBetween()` to apply different types of validation.
+- `WithMessage()` provides custom error messages when the validation fails.
+
+#### Step 4: Using FluentValidation in ASP.NET Core
+
+To use FluentValidation in an ASP.NET Core application, register the validators in the `Startup.cs` or `Program.cs` (if you're using .NET 6 or later) file.
+
+##### Example for .NET 6+:
+
+```csharp
+using FluentValidation.AspNetCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CustomerValidator>());
+
+var app = builder.Build();
+
+app.MapControllers();
+app.Run();
+```
+
+In this example:
+- `AddFluentValidation()` integrates FluentValidation with ASP.NET Core's model binding and validation pipeline.
+- `RegisterValidatorsFromAssemblyContaining<CustomerValidator>()` registers all validators found in the specified assembly.
+
+#### Step 5: Using Validators in Controllers
+
+Now, when you send a request with invalid data to the controller, FluentValidation will automatically validate the input based on the rules you defined.
+
+```csharp
+[ApiController]
+[Route("[controller]")]
+public class CustomerController : ControllerBase
+{
+    [HttpPost]
+    public IActionResult CreateCustomer(Customer customer)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        // Process the valid customer model
+        return Ok(customer);
+    }
+}
+```
+
+FluentValidation integrates with ASP.NET Core's model validation, so you don’t need to explicitly call the `Validate()` method. The validation runs automatically when the controller action is called.
+
+### Manually Using Validators
+
+If you want to use the validator manually without ASP.NET Core's automatic model validation, you can directly invoke it in your code.
+
+```csharp
+var customer = new Customer { Name = "J", Email = "invalid-email", Age = 17 };
+
+var validator = new CustomerValidator();
+var result = validator.Validate(customer);
+
+if (!result.IsValid)
+{
+    foreach (var failure in result.Errors)
+    {
+        Console.WriteLine($"Property {failure.PropertyName} failed validation. Error: {failure.ErrorMessage}");
+    }
+}
+```
+
+### Custom Validators
+
+You can also create custom validation logic using the `Must()` method.
+
+```csharp
+public class CustomerValidator : AbstractValidator<Customer>
+{
+    public CustomerValidator()
+    {
+        RuleFor(customer => customer.Age)
+            .Must(age => age % 2 == 0).WithMessage("Age must be an even number.");
+    }
+}
+```
+
+In this example, the age must be an even number, and you can define any custom condition inside the `Must()` method.
+
+### Asynchronous Validation
+
+FluentValidation also supports asynchronous validation, which can be useful when validating data that requires external services, such as checking if an email is unique.
+
+```csharp
+public class CustomerValidator : AbstractValidator<Customer>
+{
+    public CustomerValidator()
+    {
+        RuleFor(customer => customer.Email)
+            .MustAsync(BeUniqueEmail).WithMessage("Email already exists.");
+    }
+
+    private async Task<bool> BeUniqueEmail(string email, CancellationToken token)
+    {
+        // Simulate checking the email in a database or external service
+        await Task.Delay(500); // Simulating delay
+        return email != "existing-email@example.com"; // Example logic
+    }
+}
+```
+
+### Common Validation Rules in FluentValidation
+
+- `NotNull()` / `NotEmpty()`: Ensures a value is provided.
+- `Length(int min, int max)`: Ensures a string has a specific length range.
+- `Matches(string regex)`: Ensures the string matches a regular expression.
+- `GreaterThan(int value)` / `LessThan(int value)`: Ensures numeric comparisons.
+- `EmailAddress()`: Ensures a valid email format.
+- `InclusiveBetween(int min, int max)`: Ensures the value is between a given range.
+
+### Conclusion
+
+FluentValidation provides a simple and powerful way to validate your data models in .NET. It integrates well with ASP.NET Core and allows for easy definition and customization of validation logic using a fluent API. Whether you're working on a web app or an API, FluentValidation can help you ensure that your data is valid and that invalid data is handled appropriately.

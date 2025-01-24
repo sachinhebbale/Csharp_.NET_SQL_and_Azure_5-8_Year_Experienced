@@ -1,0 +1,81 @@
+In .NET Core, Dependency Injection (DI) is a technique for managing object lifetimes and dependencies. When registering services with the DI container, you can specify how the lifetime of the services should be handled. There are three main lifetimes to choose from: **Transient**, **Scoped**, and **Singleton**.
+
+Here’s an explanation of each:
+
+### 1. **Transient**
+- **Definition**: A new instance of the service is created each time it is requested.
+- **Use Case**: Use it when you want a lightweight, stateless service that doesn’t hold any data between requests.
+- **Behavior**: 
+  - When the service is injected into multiple components, each component will get a new instance.
+  - Example: A stateless service that performs isolated operations (e.g., a logging or utility service).
+
+```csharp
+services.AddTransient<IService, MyService>();
+```
+
+- **Example**:
+  ```csharp
+  public class MyService : IService
+  {
+      public Guid Id { get; } = Guid.NewGuid();
+  }
+  ```
+  In this case, every time `IService` is injected, a new instance of `MyService` will be created with a different `Guid`.
+
+---
+
+### 2. **Scoped**
+- **Definition**: A new instance of the service is created once per request (or scope). The same instance is reused within a single HTTP request but not across different requests.
+- **Use Case**: Use it when you want a service that should share state during a single request but reset on new requests (common for database contexts).
+- **Behavior**:
+  - In a web application, the same instance will be used throughout a single HTTP request.
+  - Example: A service that interacts with a database (like Entity Framework `DbContext`).
+
+```csharp
+services.AddScoped<IService, MyService>();
+```
+
+- **Example**:
+  ```csharp
+  public class MyService : IService
+  {
+      public Guid Id { get; } = Guid.NewGuid();
+  }
+  ```
+  If you inject `IService` multiple times in a single HTTP request, the same `Guid` will be returned for each injection. However, the `Guid` will be different for subsequent requests.
+
+---
+
+### 3. **Singleton**
+- **Definition**: A single instance of the service is created and shared throughout the application's entire lifetime. All components that request this service will receive the same instance.
+- **Use Case**: Use it when you need a service that holds global state or needs to persist for the application's lifetime (e.g., configuration services, caching services).
+- **Behavior**: 
+  - The same instance is used across all HTTP requests and service consumers.
+  - Be cautious when injecting stateful objects because it will persist across all users and requests.
+
+```csharp
+services.AddSingleton<IService, MyService>();
+```
+
+- **Example**:
+  ```csharp
+  public class MyService : IService
+  {
+      public Guid Id { get; } = Guid.NewGuid();
+  }
+  ```
+  Every time `IService` is injected anywhere in the application, the same `Guid` will be returned, meaning the same `MyService` instance is shared globally.
+
+---
+
+### Summary of Lifetimes:
+- **Transient**: New instance per dependency injection request.
+- **Scoped**: One instance per HTTP request or scope.
+- **Singleton**: One instance for the entire application lifetime.
+
+### Key Points:
+- **Transient** services are stateless and short-lived.
+- **Scoped** services share data within a request but are reset between requests.
+- **Singleton** services are global and persist as long as the application is running.
+
+Choose the appropriate lifetime based on the specific needs of the service and its state management requirements.

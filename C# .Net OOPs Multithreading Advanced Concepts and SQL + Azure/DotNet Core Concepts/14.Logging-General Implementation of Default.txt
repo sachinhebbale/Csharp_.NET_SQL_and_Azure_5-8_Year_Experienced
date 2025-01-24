@@ -1,0 +1,134 @@
+Logging in .NET Core is an essential part of any application, providing visibility into its behavior during runtime. It helps in diagnosing issues, monitoring performance, and auditing actions within the system. Here's a breakdown of how logging works in .NET Core:
+
+### 1. **Built-in Logging Framework**
+.NET Core comes with a built-in logging framework that is easy to use and configure. The logging system in .NET Core works with **ILogger** and **ILoggerFactory** interfaces.
+
+### 2. **Adding Logging to Your Application**
+
+To enable logging in a .NET Core application, you need to register it in the `Startup` class or programmatically through the `Program.cs` file. This is done by using the `AddLogging` method when building the dependency injection container.
+
+Here's a basic example of how logging is set up in a .NET Core application.
+
+#### In **ASP.NET Core**:
+In ASP.NET Core applications, logging is typically configured in the `Program.cs` file as part of the host creation.
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Adding logging services
+builder.Logging.ClearProviders();  // Optional, clears default providers
+builder.Logging.AddConsole();      // Adds console logging
+builder.Logging.AddDebug();        // Adds debug logging
+// You can add other providers like AddEventLog, AddAzureWebAppDiagnostics, etc.
+
+var app = builder.Build();
+
+// Example usage of logging
+app.MapGet("/", (ILogger<Program> logger) =>
+{
+    logger.LogInformation("Request received.");
+    return "Hello World!";
+});
+
+app.Run();
+```
+
+#### In a **Console Application**:
+If you are working on a console application, logging can be configured similarly.
+
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+var serviceProvider = new ServiceCollection()
+    .AddLogging(configure => configure.AddConsole())
+    .BuildServiceProvider();
+
+var logger = serviceProvider.GetService<ILoggerFactory>()
+    .CreateLogger<Program>();
+
+logger.LogInformation("This is an informational message.");
+```
+
+### 3. **Logging Levels**
+The logging framework in .NET Core supports different log levels, which can be configured globally or per provider. These levels include:
+- **Trace**: Very detailed logs, including high-volume information.
+- **Debug**: Debugging information.
+- **Information**: General information about the application's flow.
+- **Warning**: Indicates a potential issue.
+- **Error**: Something failed, but the application can continue running.
+- **Critical**: A serious error that may cause the application to crash.
+
+You can set the log level in the `appsettings.json`:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  }
+}
+```
+
+### 4. **Logging Providers**
+.NET Core has several built-in logging providers:
+- **Console**: Logs messages to the console.
+- **Debug**: Logs messages to the debug output window in IDEs like Visual Studio.
+- **EventSource**: Logs messages to Event Tracing for Windows (ETW).
+- **EventLog**: Logs messages to the Windows Event Log.
+- **Azure App Services**: Logs messages to Azure-specific diagnostics.
+
+You can also write custom logging providers by implementing the `ILoggerProvider` and `ILogger` interfaces.
+
+### 5. **Structured Logging**
+You can log structured data using **message templates**.
+
+```csharp
+logger.LogInformation("User {UserId} logged in at {Time}", userId, DateTime.Now);
+```
+
+This helps in logging context-specific information in a structured way.
+
+### 6. **Dependency Injection**
+Since `ILogger` is injected into the constructors of controllers or services, you can access it through Dependency Injection.
+
+```csharp
+public class MyService
+{
+    private readonly ILogger<MyService> _logger;
+
+    public MyService(ILogger<MyService> logger)
+    {
+        _logger = logger;
+    }
+
+    public void DoSomething()
+    {
+        _logger.LogInformation("Doing something...");
+    }
+}
+```
+
+### 7. **Third-party Logging Libraries**
+If you need more advanced logging features, you can integrate third-party libraries like:
+- **Serilog**: Provides structured logging and a wide range of sinks for output.
+- **NLog**: Flexible and powerful logging framework.
+- **Log4Net**: A popular logging library, though less common with .NET Core than Serilog or NLog.
+
+#### Example with Serilog:
+To configure Serilog:
+```csharp
+var logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
+
+logger.Information("This is an informational message.");
+```
+
+### Conclusion
+Logging in .NET Core is highly configurable and easy to integrate, whether you're using built-in providers or third-party frameworks. It is a key component in ensuring that your applications are maintainable and debuggable.

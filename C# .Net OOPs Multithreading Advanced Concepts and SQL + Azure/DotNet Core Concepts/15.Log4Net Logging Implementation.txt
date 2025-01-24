@@ -1,0 +1,143 @@
+To implement **log4net** in a .NET Core application, you need to follow these steps:
+
+### Step 1: Install Log4Net Package
+
+You can install the `log4net` NuGet package in your .NET Core project.
+
+```bash
+dotnet add package log4net
+```
+
+Alternatively, you can add it via Visual Studio by right-clicking on the project and selecting **Manage NuGet Packages**, then searching for and installing **log4net**.
+
+### Step 2: Configure Log4Net
+
+Create a configuration file for `log4net`. The configuration can either be placed in `log4net.config` or added directly to the `appsettings.json` file. 
+
+#### Example Configuration in `log4net.config`:
+Create a `log4net.config` file at the root of your project with the following contents:
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<log4net>
+  <root>
+    <level value="DEBUG" />
+    <appender-ref ref="ConsoleAppender" />
+  </root>
+
+  <appender name="ConsoleAppender" type="log4net.Appender.ConsoleAppender">
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%date [%thread] %-5level %logger - %message%newline" />
+    </layout>
+  </appender>
+
+  <appender name="RollingFileAppender" type="log4net.Appender.RollingFileAppender">
+    <file value="Logs/logfile.txt" />
+    <appendToFile value="true" />
+    <maximumFileSize value="10MB" />
+    <maxSizeRollBackups value="5" />
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%date [%thread] %-5level %logger - %message%newline" />
+    </layout>
+  </appender>
+</log4net>
+```
+
+This configuration defines:
+- **ConsoleAppender**: Outputs logs to the console.
+- **RollingFileAppender**: Logs to a file (`Logs/logfile.txt`), rolling over when the file reaches 10 MB, keeping a maximum of 5 backups.
+
+### Step 3: Register Log4Net in `Program.cs`
+
+In .NET Core, you need to configure log4net as part of your application startup in the `Program.cs` file. Here's how to do it:
+
+```csharp
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.IO;
+using log4net;
+using log4net.Config;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure log4net
+var logRepository = LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly());
+XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+
+// Add logging configuration
+builder.Logging.ClearProviders();  // Optional: Removes other logging providers
+builder.Logging.AddLog4Net();      // Adds log4net as a logging provider
+
+var app = builder.Build();
+
+app.MapGet("/", (ILogger<Program> logger) =>
+{
+    logger.LogInformation("This is an info message.");
+    logger.LogError("This is an error message.");
+    return "Hello World!";
+});
+
+app.Run();
+```
+
+### Step 4: Configure `log4net` in `appsettings.json`
+
+Alternatively, you can place the logging configuration in `appsettings.json` if preferred.
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    },
+    "Log4Net": {
+      "ConfigFile": "log4net.config",
+      "Watch": true
+    }
+  }
+}
+```
+
+Make sure that the `log4net.config` file is copied to the output directory during the build process. This can be done by editing the project file (`.csproj`) to include:
+
+```xml
+<ItemGroup>
+  <None Update="log4net.config">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
+```
+
+### Step 5: Usage in Code
+
+You can now use the `ILogger<T>` interface for logging in your controllers or services. The `log4net` provider will capture and route logs based on the configuration.
+
+#### Example of using the logger in a service:
+
+```csharp
+public class MyService
+{
+    private readonly ILogger<MyService> _logger;
+
+    public MyService(ILogger<MyService> logger)
+    {
+        _logger = logger;
+    }
+
+    public void DoWork()
+    {
+        _logger.LogInformation("This is an info message.");
+        _logger.LogError("This is an error message.");
+    }
+}
+```
+
+### Step 6: Run the Application
+
+Once everything is set up, run the application, and you should see logs outputted both to the console and the log file defined in the `log4net.config`.
+
+### Conclusion
+
+This is how you can implement `log4net` in a .NET Core application. By setting up the configuration in `log4net.config` and registering the logging provider in `Program.cs`, you can effectively use log4net to handle your application's logging.

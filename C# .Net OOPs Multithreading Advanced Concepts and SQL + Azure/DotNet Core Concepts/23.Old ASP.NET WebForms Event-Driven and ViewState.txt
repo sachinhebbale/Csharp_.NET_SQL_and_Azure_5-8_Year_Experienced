@@ -1,0 +1,80 @@
+### Event-Driven Model (in ASP.NET Web Forms)
+
+The **event-driven model** in ASP.NET Web Forms is similar to the programming model used in desktop applications (like Windows Forms), where interactions (e.g., button clicks, text changes) trigger **events**, which are handled by **event handlers**.
+
+#### Key Characteristics:
+1. **Event-Handling in Code-Behind**:
+   - In ASP.NET Web Forms, each control (e.g., buttons, text boxes) can trigger server-side events like `Button_Click`, `TextBox_TextChanged`, etc.
+   - These events are handled in **code-behind** files (e.g., `.aspx.cs` or `.aspx.vb` files) using event handlers. For example:
+     ```csharp
+     protected void Button_Click(object sender, EventArgs e)
+     {
+         // Handle button click event
+     }
+     ```
+
+2. **Postbacks**:
+   - When an event is triggered (e.g., a button click), the page posts back (a **postback**) to the server. The server processes the event, updates the state of controls, and re-renders the page.
+   - This **postback** cycle is central to the event-driven model in Web Forms.
+   
+3. **Complex Page Lifecycle**:
+   - Web Forms has a multi-stage **page lifecycle** (e.g., `Init`, `Load`, `PreRender`, `Unload`), and events can occur at various stages of this lifecycle.
+   - Developers need to be familiar with the lifecycle to properly manage control state and event handling.
+
+4. **Server Controls**:
+   - Controls like `<asp:Button>`, `<asp:TextBox>`, etc., are **server controls** that automatically generate HTML and handle events like `OnClick`, `OnTextChanged` server-side.
+   - This abstraction makes it easier to handle user interactions but hides the underlying HTML, which limits flexibility.
+
+#### Advantages of the Event-Driven Model:
+- **Familiarity**: It’s intuitive for developers who come from a desktop application background (e.g., Windows Forms).
+- **Abstraction**: The model hides the complexity of HTML and JavaScript, allowing developers to focus more on server-side logic.
+
+#### Disadvantages:
+- **Performance Overhead**: Postbacks can be slow and lead to large ViewState data.
+- **Limited Control over HTML**: The abstraction over HTML can make it harder to optimize and use modern front-end techniques.
+- **Complex Lifecycle**: Managing the page lifecycle and control state is more difficult for large, complex applications.
+
+---
+
+### View State (in ASP.NET Web Forms)
+
+**View State** is a mechanism in ASP.NET Web Forms that maintains the state of **server controls** (e.g., text boxes, buttons, etc.) across **postbacks**.
+
+#### Key Characteristics:
+1. **Purpose**:
+   - Since HTTP is a stateless protocol, each request and response is independent. View State ensures that a control's state (e.g., a user’s input in a text box) is preserved when a postback occurs (e.g., after clicking a button).
+
+2. **How It Works**:
+   - View State stores the state of controls in a hidden field (`__VIEWSTATE`) on the page.
+   - This hidden field contains a **base64-encoded string** that represents the serialized state of the page’s controls.
+   - When a postback occurs, ASP.NET reads the value from `__VIEWSTATE`, deserializes it, and restores the controls to their previous state.
+   
+   Example:
+   ```html
+   <input type="hidden" name="__VIEWSTATE" value="dDwtNzg5ODkzNzA7Oz7/7y/nAbtJbvn5v0cIcVI5zg==" />
+   ```
+
+3. **Automatic**:
+   - View State is enabled by default for all server controls. Developers don’t need to manually implement state management; it's automatic.
+
+4. **Scope**:
+   - View State is specific to a single page. It doesn’t carry state across pages or sessions. It only persists the state of the page between postbacks.
+
+#### Advantages of View State:
+- **Simplicity**: It simplifies state management. Without it, developers would need to manually save and restore the state of each control.
+- **No Server-Side Storage**: Since it’s stored in the page itself, View State doesn’t require additional server resources to store control state.
+
+#### Disadvantages of View State:
+- **Large Payloads**: View State can become very large, especially for complex pages with many controls. This increases the size of the HTML sent to the client, leading to slower page load times.
+- **Security**: While View State is **base64-encoded**, it is not encrypted by default. Malicious users could potentially tamper with it unless it’s encrypted using the `ViewStateEncryptionMode`.
+- **Limited Scope**: View State only works within the context of a single page. If you need to maintain state across multiple pages or sessions, you’ll need additional state management techniques like Session or cookies.
+
+---
+
+### Summary of Event-Driven Model and View State:
+
+- **Event-Driven Model**: Provides an easy way to handle user interactions in Web Forms using server-side events. It abstracts much of the client-side complexity and makes development easier for traditional web applications but comes with performance and flexibility trade-offs.
+  
+- **View State**: Maintains the state of server controls across postbacks in Web Forms by storing serialized control state in a hidden field. While it simplifies state management, it can lead to larger page sizes and slower performance.
+
+Both the **event-driven model** and **View State** are key features of ASP.NET Web Forms but aren't typically used in modern frameworks like ASP.NET Core MVC, where a more explicit and stateless development model is favored.

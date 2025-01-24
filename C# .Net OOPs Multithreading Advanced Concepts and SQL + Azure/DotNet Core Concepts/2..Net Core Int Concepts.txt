@@ -1,0 +1,69 @@
+Here are some common .NET Core interview questions to help you prepare:
+
+### .NET Core Basics:
+1. **What is .NET Core?**
+   - Explain .NET Core as a cross-platform, high-performance framework for building applications, compared to the full .NET Framework.
+
+2. **What is the difference between .NET Core and .NET Framework?**
+   - Discuss cross-platform compatibility, modular architecture, and open-source nature of .NET Core.
+
+3. **Explain the role of the `Program.cs` and `Startup.cs` in an ASP.NET Core application.**
+   - Discuss how `Program.cs` contains the entry point of the application and `Startup.cs` configures services and the app’s request pipeline.
+
+4. **What is Dependency Injection (DI)? How is it implemented in .NET Core?**
+   - Discuss the built-in DI container in .NET Core and how services are added and injected using `ConfigureServices` and constructors.
+
+### Middleware:
+5. **What is middleware in ASP.NET Core?**
+   - Explain middleware as components in a pipeline that handle HTTP requests and responses.
+
+6. **How do you implement custom middleware in .NET Core?**
+   - Walk through creating a custom middleware class, using `Invoke` or `InvokeAsync` methods, and registering it in the `Startup` class.
+
+### MVC Architecture:
+7. **What is the difference between ASP.NET Core MVC and Web API?**
+   - Highlight key differences, including return types and typical use cases for each.
+
+8. **Explain Model Binding and Model Validation in ASP.NET Core.**
+   - Discuss how model binding maps request data to model objects, and how validation is performed using attributes.
+
+9. **What is Tag Helper in ASP.NET Core?**
+   - Explain how Tag Helpers simplify HTML and enhance views by enabling server-side code within HTML tags.
+
+### Entity Framework Core:
+10. **What is Entity Framework Core?**
+    - Explain EF Core as an ORM (Object Relational Mapper) framework that supports LINQ queries, change tracking, etc.
+
+11. **How do you implement code-first and database-first approaches in EF Core?**
+    - Discuss the two approaches and the process of creating models, migrations, and updating the database.
+
+12. **Explain migrations in Entity Framework Core.**
+    - Discuss how migrations track changes to models and databases and how they are applied using commands like `Add-Migration` and `Update-Database`.
+
+### Performance and Security:
+13. **What is Kestrel in .NET Core?**
+    - Explain Kestrel as a lightweight, cross-platform web server used in ASP.NET Core.
+
+14. **How do you implement logging in .NET Core?**
+    - Discuss the built-in logging framework and how to configure it in `Startup.cs` using services like `ILogger` and third-party log providers (e.g., Serilog).
+
+15. **What are some ways to improve performance in .NET Core applications?**
+    - Mention caching, asynchronous programming, and optimizing database queries, along with enabling response compression.
+
+### Advanced Concepts:
+16. **What are microservices, and how does .NET Core support them?**
+    - Discuss the microservices architecture and how .NET Core’s modularity, lightweight footprint, and container support make it suitable for microservices.
+
+17. **What is the difference between synchronous and asynchronous programming in .NET Core?**
+    - Explain async/await and how asynchronous code improves application scalability and responsiveness.
+
+18. **How does .NET Core support Docker containers?**
+    - Talk about the use of Docker to containerize applications, and how to create a Dockerfile to run .NET Core apps in containers.
+
+19. **What is gRPC and how is it supported in .NET Core?**
+    - Discuss gRPC as a high-performance RPC framework and how .NET Core offers built-in support for it, especially in microservices architecture.
+
+20. **What is the role of the `IHostedService` interface in .NET Core?**
+    - Explain how `IHostedService` is used to create long-running background services and how to implement it for background processing.
+
+By practicing these questions, you'll be well-prepared for a .NET Core interview. Would you like to dive deeper into any of these topics or explore more advanced questions?
