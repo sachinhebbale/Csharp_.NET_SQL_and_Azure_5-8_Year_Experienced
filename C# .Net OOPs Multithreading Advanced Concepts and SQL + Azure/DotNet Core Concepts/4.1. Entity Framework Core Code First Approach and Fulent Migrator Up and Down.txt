@@ -1,0 +1,254 @@
+Here's a simple **Code-First Entity Framework Core** example in **C#**. It demonstrates how to set up a model, create a `DbContext`, and apply migrations to create a database.
+
+---
+
+### **Step 1: Install Required Packages**
+If you haven't already, install these NuGet packages:
+
+```sh
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+```
+
+---
+
+### **Step 2: Define Entity Classes (Model)**
+Create a class representing the table structure.
+
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+public class Product
+{
+    [Key]  // Primary Key
+    public int ProductId { get; set; }
+
+    [Required]
+    public string Name { get; set; }
+
+    public decimal Price { get; set; }
+}
+```
+
+---
+
+### **Step 3: Create the `DbContext`**
+Define the database context class to manage the entity.
+
+```csharp
+using Microsoft.EntityFrameworkCore;
+
+public class AppDbContext : DbContext
+{
+    public DbSet<Product> Products { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=CodeFirstDb;Trusted_Connection=True;");
+    }
+}
+```
+
+---
+
+### **Step 4: Apply Migrations**
+Run the following commands in the **Package Manager Console** (PMC) or terminal.
+
+```sh
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
+
+This will generate a migration file and create the database.
+
+---
+
+### **Step 5: Add and Retrieve Data**
+Use the `DbContext` to insert and fetch data.
+
+```csharp
+using System;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new AppDbContext())
+        {
+            // Insert Data
+            var product = new Product { Name = "Laptop", Price = 75000 };
+            context.Products.Add(product);
+            context.SaveChanges();
+
+            // Fetch Data
+            var products = context.Products.ToList();
+            Console.WriteLine("Products in database:");
+            foreach (var p in products)
+            {
+                Console.WriteLine($"ID: {p.ProductId}, Name: {p.Name}, Price: {p.Price}");
+            }
+        }
+    }
+}
+```
+
+---
+
+### **Summary**
+- **Step 1:** Install EF Core packages.
+- **Step 2:** Create entity classes (`Product`).
+- **Step 3:** Create `DbContext` and configure connection string.
+- **Step 4:** Apply migrations using `dotnet ef`.
+- **Step 5:** Perform CRUD operations.
+
+Would you like to extend this example with **Fluent API** or **Relationships**? 🚀
+
+### **Migrate Up and Migrate Down Examples Using FluentMigrator in .NET Core**  
+
+[FluentMigrator](https://fluentmigrator.github.io/) is an alternative to **Entity Framework Migrations** that provides a **fluent API** for managing database migrations in .NET applications.
+
+---
+
+## **1️⃣ Install FluentMigrator Packages**  
+
+Run the following **NuGet commands** to install FluentMigrator:
+
+```sh
+dotnet add package FluentMigrator
+dotnet add package FluentMigrator.Runner
+```
+
+---
+
+## **2️⃣ Configure FluentMigrator in `DbContext`**  
+Create a `MigrationService` class to configure and run migrations.
+
+```csharp
+using FluentMigrator.Runner;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+
+public class MigrationService
+{
+    public static void RunMigrations()
+    {
+        var serviceProvider = new ServiceCollection()
+            .AddFluentMigratorCore()
+            .ConfigureRunner(rb => rb
+                .AddSqlServer()
+                .WithGlobalConnectionString("Server=(localdb)\\mssqllocaldb;Database=FluentMigratorDb;Trusted_Connection=True;")
+                .ScanIn(typeof(InitialMigration).Assembly).For.Migrations())
+            .BuildServiceProvider();
+
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+            runner.MigrateUp();  // Runs all migrations
+        }
+    }
+}
+```
+
+---
+
+## **3️⃣ Create an Initial Migration (Up and Down Methods)**
+FluentMigrator uses `Up()` and `Down()` methods to define schema changes.
+
+```csharp
+using FluentMigrator;
+
+[Migration(2025013001)]
+public class InitialMigration : Migration
+{
+    public override void Up()
+    {
+        Create.Table("Products")
+            .WithColumn("ProductId").AsInt32().PrimaryKey().Identity()
+            .WithColumn("Name").AsString(255).NotNullable()
+            .WithColumn("Price").AsDecimal().NotNullable();
+    }
+
+    public override void Down()
+    {
+        Delete.Table("Products");
+    }
+}
+```
+
+- **`Up()`**: Creates a `Products` table with columns `ProductId`, `Name`, and `Price`.  
+- **`Down()`**: Deletes the `Products` table (used for rollback).  
+
+---
+
+## **4️⃣ Run Migrations in `Program.cs`**
+Modify `Program.cs` to execute migrations.
+
+```csharp
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Running Migrations...");
+        MigrationService.RunMigrations();
+        Console.WriteLine("Migrations Applied Successfully!");
+    }
+}
+```
+
+Run the program, and it will create the `Products` table.
+
+---
+
+## **5️⃣ Add a New Column (New Migration Example)**
+If we need to add a `Description` column to the `Products` table, we create a new migration.
+
+```csharp
+[Migration(2025013002)]
+public class AddDescriptionColumn : Migration
+{
+    public override void Up()
+    {
+        Alter.Table("Products").AddColumn("Description").AsString(500).Nullable();
+    }
+
+    public override void Down()
+    {
+        Delete.Column("Description").FromTable("Products");
+    }
+}
+```
+
+### **Run the Migration Again**
+```sh
+dotnet run
+```
+This applies the `Up()` method, adding the `Description` column.
+
+---
+
+## **6️⃣ Rolling Back (Migrate Down)**
+To **revert the last migration**, use:
+
+```csharp
+runner.MigrateDown(2025013001);  // Rolls back to InitialMigration
+```
+
+To **revert all migrations (reset the database)**, run:
+
+```sh
+runner.MigrateDown(0);
+```
+
+---
+
+## **Summary**
+✅ **Step 1:** Install FluentMigrator.  
+✅ **Step 2:** Configure FluentMigrator in `MigrationService`.  
+✅ **Step 3:** Define an initial migration (`InitialMigration`).  
+✅ **Step 4:** Run `MigrateUp()` to create tables.  
+✅ **Step 5:** Add a new migration (`AddDescriptionColumn`).  
+✅ **Step 6:** Use `MigrateDown()` to rollback changes.
+
+Would you like an example with **Foreign Keys (One-to-Many, Many-to-Many)** using FluentMigrator? 🚀

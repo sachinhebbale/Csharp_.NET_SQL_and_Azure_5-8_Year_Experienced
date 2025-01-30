@@ -1,0 +1,496 @@
+Here’s a simple **Unit Testing** example using **NUnit** in **C#**.
+
+---
+
+## **1. Install NUnit and NUnit Test Adapter**
+If you're using **Visual Studio**, install the following NuGet packages in your test project:
+- `NUnit`
+- `NUnit3TestAdapter` (for running tests in Visual Studio)
+- `Microsoft.NET.Test.Sdk` (if required)
+
+Run the following command in the **Package Manager Console**:
+```powershell
+Install-Package NUnit
+Install-Package NUnit3TestAdapter
+Install-Package Microsoft.NET.Test.Sdk
+```
+
+---
+
+## **2. Example: A Simple Math Class**
+Let’s create a basic `MathOperations` class that contains methods to add and subtract numbers.
+
+### **Production Code (MathOperations.cs)**
+```csharp
+public class MathOperations
+{
+    public int Add(int a, int b)
+    {
+        return a + b;
+    }
+
+    public int Subtract(int a, int b)
+    {
+        return a - b;
+    }
+}
+```
+
+---
+
+## **3. Writing NUnit Test Cases**
+Now, let's create a **unit test class** to test the `MathOperations` class.
+
+### **Unit Test Code (MathOperationsTests.cs)**
+```csharp
+using NUnit.Framework;
+
+[TestFixture] // Marks this class as a test fixture
+public class MathOperationsTests
+{
+    private MathOperations _math;
+
+    [SetUp] // Runs before each test method
+    public void Setup()
+    {
+        _math = new MathOperations();
+    }
+
+    [Test] // Marks this method as a test case
+    public void Add_TwoNumbers_ReturnsSum()
+    {
+        int result = _math.Add(5, 3);
+        Assert.AreEqual(8, result);
+    }
+
+    [Test]
+    public void Subtract_TwoNumbers_ReturnsDifference()
+    {
+        int result = _math.Subtract(10, 4);
+        Assert.AreEqual(6, result);
+    }
+
+    [Test]
+    [TestCase(2, 3, 5)]
+    [TestCase(-1, -1, -2)]
+    [TestCase(0, 0, 0)]
+    public void Add_TestCases_ReturnsExpectedResult(int a, int b, int expected)
+    {
+        int result = _math.Add(a, b);
+        Assert.AreEqual(expected, result);
+    }
+}
+```
+
+---
+
+## **4. Explanation of NUnit Attributes**
+| **NUnit Attribute** | **Purpose** |
+|--------------------|------------|
+| `[TestFixture]` | Marks the class as a test class. |
+| `[SetUp]` | Runs before each test method (used for initialization). |
+| `[Test]` | Marks a method as a test case. |
+| `[TestCase(x, y, expected)]` | Runs the test multiple times with different values. |
+| `Assert.AreEqual(expected, actual)` | Compares expected vs. actual values. |
+
+---
+
+## **5. Running NUnit Tests**
+In **Visual Studio**, you can run the tests using:
+1. **Test Explorer** (`Ctrl + E, T` in Windows).
+2. Right-click the test method and select **Run Test**.
+
+Alternatively, if you are using the **.NET CLI**, run:
+```sh
+dotnet test
+```
+
+---
+
+## **6. Sample Output**
+```
+Test Run Successful.
+Total tests: 3
+Passed: 3
+Failed: 0
+```
+
+This confirms that our **unit tests are working** correctly. 🎉
+
+---
+
+Would you like an example with **mocking (Moq)** or **dependency injection**? 🚀
+
+
+Here’s an enhanced NUnit **unit testing example** using **Moq** (for mocking dependencies) and **Dependency Injection (DI)**.
+
+---
+
+## **1. Install Required NuGet Packages**
+Run the following command in the **Package Manager Console**:
+```powershell
+Install-Package NUnit
+Install-Package NUnit3TestAdapter
+Install-Package Microsoft.NET.Test.Sdk
+Install-Package Moq
+```
+
+---
+
+## **2. Create a Service with Dependency Injection**
+Let's say we have a service `CalculatorService` that depends on an external interface `ILoggerService`.
+
+### **Production Code**
+#### **ILoggerService.cs (Dependency Interface)**
+```csharp
+public interface ILoggerService
+{
+    void Log(string message);
+}
+```
+
+#### **CalculatorService.cs (Class to be Tested)**
+```csharp
+public class CalculatorService
+{
+    private readonly ILoggerService _logger;
+
+    public CalculatorService(ILoggerService logger)
+    {
+        _logger = logger;
+    }
+
+    public int Add(int a, int b)
+    {
+        int result = a + b;
+        _logger.Log($"Add method called with {a} and {b}, result: {result}");
+        return result;
+    }
+
+    public int Divide(int a, int b)
+    {
+        if (b == 0)
+        {
+            _logger.Log("Attempted division by zero");
+            throw new DivideByZeroException("Cannot divide by zero");
+        }
+
+        int result = a / b;
+        _logger.Log($"Divide method called with {a} and {b}, result: {result}");
+        return result;
+    }
+}
+```
+
+---
+
+## **3. Writing NUnit Test with Moq**
+Now, we will create a test class and **mock** the `ILoggerService` dependency using Moq.
+
+### **Unit Test Code**
+#### **CalculatorServiceTests.cs**
+```csharp
+using NUnit.Framework;
+using Moq;
+using System;
+
+[TestFixture]
+public class CalculatorServiceTests
+{
+    private CalculatorService _calculator;
+    private Mock<ILoggerService> _mockLogger;
+
+    [SetUp]
+    public void Setup()
+    {
+        _mockLogger = new Mock<ILoggerService>(); // Creating a mock of ILoggerService
+        _calculator = new CalculatorService(_mockLogger.Object); // Injecting the mock into CalculatorService
+    }
+
+    [Test]
+    public void Add_TwoNumbers_ReturnsSum()
+    {
+        int result = _calculator.Add(5, 3);
+
+        Assert.AreEqual(8, result);
+        
+        // Verify that Log method was called once with any string message
+        _mockLogger.Verify(log => log.Log(It.IsAny<string>()), Times.Once);
+    }
+
+    [Test]
+    public void Divide_ByNonZeroNumber_ReturnsQuotient()
+    {
+        int result = _calculator.Divide(10, 2);
+
+        Assert.AreEqual(5, result);
+        
+        // Verify that the log was called
+        _mockLogger.Verify(log => log.Log(It.IsAny<string>()), Times.Once);
+    }
+
+    [Test]
+    public void Divide_ByZero_ThrowsException()
+    {
+        var ex = Assert.Throws<DivideByZeroException>(() => _calculator.Divide(10, 0));
+        
+        Assert.AreEqual("Cannot divide by zero", ex.Message);
+
+        // Verify that the log message for division by zero was called
+        _mockLogger.Verify(log => log.Log("Attempted division by zero"), Times.Once);
+    }
+}
+```
+
+---
+
+## **4. Explanation of Moq Usage**
+| **Moq Feature** | **Purpose** |
+|----------------|------------|
+| `new Mock<ILoggerService>()` | Creates a mock object for `ILoggerService`. |
+| `_mockLogger.Object` | Passes the mock instance as a dependency to `CalculatorService`. |
+| `It.IsAny<string>()` | Matches any string argument for logging. |
+| `Times.Once` | Ensures the method was called exactly once. |
+| `_mockLogger.Verify(log => log.Log("Attempted division by zero"), Times.Once)` | Ensures the correct log message is generated. |
+
+---
+
+## **5. Running the Tests**
+Use **Test Explorer** in Visual Studio or run:
+```sh
+dotnet test
+```
+
+### **Sample Output**
+```
+Test Run Successful.
+Total tests: 3
+Passed: 3
+Failed: 0
+```
+
+---
+
+## **Why Use Moq and DI?**
+✅ **Mocking isolates dependencies**, ensuring that tests are **fast and independent**.  
+✅ **Dependency Injection (DI)** promotes **loosely coupled** and **testable code**.  
+✅ **Verifying method calls** ensures that dependent services behave as expected.  
+
+---
+
+Would you like an example with **integration testing** using `xUnit` or **async unit tests**? 🚀
+
+
+Great! Let’s now look at **Integration Testing with xUnit** and **Async Unit Tests** in .NET.  
+
+---
+
+# **1. Integration Testing using xUnit**  
+Integration tests verify the interaction between multiple components, such as database connections, APIs, or external services.  
+
+### **📌 Setup Required NuGet Packages**  
+Run the following command in the **Package Manager Console**:  
+```powershell
+Install-Package xUnit
+Install-Package Microsoft.AspNetCore.Mvc.Testing
+Install-Package Moq
+Install-Package FluentAssertions
+```
+
+---
+
+## **2. Create a Simple Web API (Production Code)**
+We’ll create an API with a **WeatherService** that fetches weather data.
+
+### **📌 WeatherService.cs (Service to be Tested)**
+```csharp
+public interface IWeatherService
+{
+    Task<string> GetWeatherAsync(string city);
+}
+
+public class WeatherService : IWeatherService
+{
+    public async Task<string> GetWeatherAsync(string city)
+    {
+        await Task.Delay(100); // Simulate async API call
+        return $"Weather in {city}: Sunny";
+    }
+}
+```
+
+---
+
+### **📌 WeatherController.cs (API Controller)**
+```csharp
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
+[Route("api/weather")]
+[ApiController]
+public class WeatherController : ControllerBase
+{
+    private readonly IWeatherService _weatherService;
+
+    public WeatherController(IWeatherService weatherService)
+    {
+        _weatherService = weatherService;
+    }
+
+    [HttpGet("{city}")]
+    public async Task<IActionResult> GetWeather(string city)
+    {
+        var weather = await _weatherService.GetWeatherAsync(city);
+        return Ok(weather);
+    }
+}
+```
+
+---
+
+## **3. Writing Integration Test with xUnit**
+We will create an **integration test** for `WeatherController` using **xUnit**.
+
+### **📌 WeatherControllerTests.cs**
+```csharp
+using System.Net.Http;
+using System.Threading.Tasks;
+using Xunit;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Moq;
+using Microsoft.Extensions.DependencyInjection;
+using FluentAssertions;
+
+public class WeatherControllerTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly HttpClient _client;
+    private readonly Mock<IWeatherService> _mockWeatherService;
+
+    public WeatherControllerTests(WebApplicationFactory<Program> factory)
+    {
+        _mockWeatherService = new Mock<IWeatherService>();
+        _mockWeatherService.Setup(s => s.GetWeatherAsync("Bangalore"))
+                           .ReturnsAsync("Weather in Bangalore: Sunny");
+
+        _client = factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton(_mockWeatherService.Object); // Mock Service
+            });
+        }).CreateClient();
+    }
+
+    [Fact]
+    public async Task GetWeather_ReturnsCorrectData()
+    {
+        // Act
+        var response = await _client.GetAsync("/api/weather/Bangalore");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadAsStringAsync();
+        result.Should().Be("Weather in Bangalore: Sunny");
+    }
+}
+```
+
+---
+
+## **4. Explanation of Integration Testing**
+| **Concept**               | **Description** |
+|--------------------------|---------------|
+| `WebApplicationFactory<Program>` | Spins up an **in-memory test server** for integration testing. |
+| `services.AddSingleton(_mockWeatherService.Object)` | Injects **mocked dependencies** for controlled testing. |
+| `HttpClient` | Simulates real API calls to test the controller. |
+| `FluentAssertions` | Provides **clean and readable assertions** (`Should().Be()`). |
+
+---
+
+## **5. Running the Test**
+Run the test using:
+```sh
+dotnet test
+```
+### **✅ Expected Output**
+```
+Test Run Successful.
+Total tests: 1
+Passed: 1
+Failed: 0
+```
+This confirms that our **integration test is working** correctly. 🎉  
+
+---
+
+# **6. Async Unit Test Example using NUnit**
+Let's write **async unit tests** for a `UserService`.
+
+### **📌 UserService.cs (Service to be Tested)**
+```csharp
+using System.Threading.Tasks;
+
+public class UserService
+{
+    public async Task<string> GetUserAsync(int id)
+    {
+        await Task.Delay(100); // Simulate database/API delay
+        return id == 1 ? "John Doe" : "User Not Found";
+    }
+}
+```
+
+---
+
+### **📌 UserServiceTests.cs**
+```csharp
+using NUnit.Framework;
+using System.Threading.Tasks;
+
+[TestFixture]
+public class UserServiceTests
+{
+    private UserService _userService;
+
+    [SetUp]
+    public void Setup()
+    {
+        _userService = new UserService();
+    }
+
+    [Test]
+    public async Task GetUserAsync_ValidId_ReturnsUserName()
+    {
+        var result = await _userService.GetUserAsync(1);
+        Assert.AreEqual("John Doe", result);
+    }
+
+    [Test]
+    public async Task GetUserAsync_InvalidId_ReturnsNotFound()
+    {
+        var result = await _userService.GetUserAsync(999);
+        Assert.AreEqual("User Not Found", result);
+    }
+}
+```
+
+---
+
+## **7. Key Benefits of Async Unit Tests**
+✅ Ensures **asynchronous methods are tested properly**.  
+✅ Uses `await` to test real-world async execution.  
+✅ Prevents **false positives** by avoiding synchronous test execution.  
+
+---
+
+# **8. Summary**
+| **Feature** | **NUnit Unit Test** | **Moq for Mocking** | **xUnit Integration Test** | **Async Test** |
+|------------|--------------------|--------------------|----------------------|------------|
+| **Framework** | NUnit | NUnit + Moq | xUnit + WebApplicationFactory | NUnit |
+| **Scope** | Tests individual methods | Mocks dependencies | Tests full API behavior | Tests async methods |
+| **Example** | CalculatorService | ILoggerService mock | WeatherController API test | UserService async test |
+
+---
+
+### **🚀 Would you like an example with Entity Framework Core for database integration testing?**
+
