@@ -1,0 +1,87 @@
+In **ASP.NET Core Dependency Injection (DI)**, **Transient** and **Scoped** are two of the **lifetime options** for registered services. They determine how instances of a service are created and managed.  
+
+---
+
+### **1. Transient Lifetime**
+- **A new instance is created every time** the service is requested.
+- **Best for stateless services** (e.g., lightweight, short-lived objects).
+- Can lead to **performance overhead** if used excessively.
+  
+✅ **Example:**
+```csharp
+services.AddTransient<IMyService, MyService>();
+```
+📌 **Use Case:**  
+- Logging, Utility classes, Lightweight operations.
+
+💡 **Example Usage:**
+```csharp
+public class HomeController
+{
+    private readonly IMyService _myService1;
+    private readonly IMyService _myService2;
+
+    public HomeController(IMyService myService1, IMyService myService2)
+    {
+        _myService1 = myService1;
+        _myService2 = myService2;
+    }
+
+    public IActionResult Index()
+    {
+        bool areSame = _myService1 == _myService2; // Always false (different instances)
+        return View();
+    }
+}
+```
+🚀 **Each injection gets a new instance**.
+
+---
+
+### **2. Scoped Lifetime**
+- **A single instance per request (HTTP request in web apps).**
+- Within the same request, the same instance is used.
+- Ideal for **database contexts** where multiple services need the same instance.
+
+✅ **Example:**
+```csharp
+services.AddScoped<IMyService, MyService>();
+```
+📌 **Use Case:**  
+- Entity Framework Core `DbContext`, Business logic layer services.
+
+💡 **Example Usage:**
+```csharp
+public class HomeController
+{
+    private readonly IMyService _myService1;
+    private readonly IMyService _myService2;
+
+    public HomeController(IMyService myService1, IMyService myService2)
+    {
+        _myService1 = myService1;
+        _myService2 = myService2;
+    }
+
+    public IActionResult Index()
+    {
+        bool areSame = _myService1 == _myService2; // True (same instance within request)
+        return View();
+    }
+}
+```
+🚀 **Same instance is shared within the request** but a **new one is created for each request**.
+
+---
+
+### **Summary Table**
+| Lifetime   | Instance Creation | Scope |
+|------------|------------------|--------------------------------|
+| **Transient** | New instance every time | Always different instances |
+| **Scoped** | One instance per request | Shared within the request |
+
+**When to Use What?**
+- **Use `Transient`** when you don’t need to maintain state between requests (stateless services).
+- **Use `Scoped`** when you need to maintain state **within a request**, like working with a database.
+
+Would you like an example with `Singleton` as well? 😊
