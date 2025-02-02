@@ -1,0 +1,96 @@
+The **Liskov Substitution Principle (LSP)** is one of the five SOLID principles of object-oriented programming. It states:  
+
+*"Objects of a superclass should be replaceable with objects of its subclasses without affecting the correctness of the program."*  
+
+This means that if class `B` is a subclass of class `A`, then objects of type `A` should be replaceable with objects of type `B` without altering the behavior of the program.
+
+---
+
+### **Example: Violating Liskov Substitution Principle**
+Let's consider a **Rectangle** and **Square** example where LSP is violated.
+
+```csharp
+public class Rectangle
+{
+    public virtual int Width { get; set; }
+    public virtual int Height { get; set; }
+
+    public int GetArea()
+    {
+        return Width * Height;
+    }
+}
+
+public class Square : Rectangle
+{
+    public override int Width
+    {
+        set { base.Width = base.Height = value; }
+    }
+
+    public override int Height
+    {
+        set { base.Width = base.Height = value; }
+    }
+}
+```
+### **Problem in the Above Code**
+The **Square** class overrides `Width` and `Height` properties in such a way that setting one automatically changes the other. This violates the **Liskov Substitution Principle** because a `Square` does not behave exactly like a `Rectangle`.  
+
+Example usage:
+```csharp
+Rectangle rect = new Square();
+rect.Width = 5;
+rect.Height = 10;
+
+Console.WriteLine(rect.GetArea()); // Expected 50, but it prints 100 (5x5)
+```
+The expected behavior of a rectangle is broken because **Square** forces both width and height to be the same.
+
+---
+
+### **Correcting the Violation**
+To properly follow LSP, we should **not** force `Square` to inherit from `Rectangle`. Instead, we should define a common base class or interface.
+
+#### **Solution: Using an Interface**
+```csharp
+public interface IShape
+{
+    int GetArea();
+}
+
+public class Rectangle : IShape
+{
+    public int Width { get; set; }
+    public int Height { get; set; }
+
+    public int GetArea()
+    {
+        return Width * Height;
+    }
+}
+
+public class Square : IShape
+{
+    public int Side { get; set; }
+
+    public int GetArea()
+    {
+        return Side * Side;
+    }
+}
+```
+Now, both `Rectangle` and `Square` implement `IShape`, and they can be used interchangeably without breaking expected behavior.
+
+Example:
+```csharp
+IShape shape1 = new Rectangle { Width = 5, Height = 10 };
+IShape shape2 = new Square { Side = 5 };
+
+Console.WriteLine(shape1.GetArea()); // 50
+Console.WriteLine(shape2.GetArea()); // 25
+```
+
+By following this approach, we ensure that substituting one shape for another does not break the program, preserving **Liskov Substitution Principle**.
+
+Would you like another example in a different context? 😊
