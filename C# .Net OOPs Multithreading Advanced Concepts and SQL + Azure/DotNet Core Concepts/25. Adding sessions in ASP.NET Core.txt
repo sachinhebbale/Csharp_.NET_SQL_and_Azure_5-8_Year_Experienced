@@ -1,0 +1,116 @@
+### **Adding Sessions in ASP.NET Core using `UseSession`**
+In **ASP.NET Core**, session management allows storing user-specific data between HTTP requests. The **`UseSession`** middleware helps enable session storage.
+
+---
+
+### **1. Configure Session in `Program.cs`**
+Modify `Program.cs` to add session services and middleware.
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+// Step 1: Add Session Services
+builder.Services.AddDistributedMemoryCache(); // Required for session storage
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true; // Ensures session cookie is always stored
+});
+
+var app = builder.Build();
+
+// Step 2: Use Session Middleware
+app.UseSession();  // Enables session before MVC middleware
+app.UseRouting();
+app.UseAuthorization();
+
+app.MapControllers();
+app.Run();
+```
+
+---
+
+### **2. Storing and Retrieving Session Data in Controller**
+Once the session is enabled, you can store and retrieve values using `HttpContext.Session`.
+
+#### **Storing Session Data**
+```csharp
+public class HomeController : Controller
+{
+    public IActionResult SetSession()
+    {
+        HttpContext.Session.SetString("UserName", "JohnDoe");
+        HttpContext.Session.SetInt32("UserId", 123);
+        return Content("Session Data Stored!");
+    }
+}
+```
+
+#### **Retrieving Session Data**
+```csharp
+public IActionResult GetSession()
+{
+    string? userName = HttpContext.Session.GetString("UserName");
+    int? userId = HttpContext.Session.GetInt32("UserId");
+
+    return Content($"User: {userName}, ID: {userId}");
+}
+```
+
+---
+
+### **3. Removing Session Data**
+You can remove specific session values or clear all session data.
+
+#### **Remove a Specific Session Key**
+```csharp
+HttpContext.Session.Remove("UserName");
+```
+
+#### **Clear All Session Data**
+```csharp
+HttpContext.Session.Clear();
+```
+
+---
+
+### **4. Using Session in Middleware**
+If you need to access session data in middleware, ensure that **`UseSession()`** is registered **before `UseEndpoints()`** in `Program.cs`.
+
+```csharp
+app.UseSession();
+app.Use(async (context, next) =>
+{
+    context.Session.SetString("GlobalData", "Hello, Session!");
+    await next();
+});
+```
+
+---
+
+### **5. Session Storage Options**
+By default, **ASP.NET Core sessions are stored in memory** (via `AddDistributedMemoryCache()`), but you can configure other providers:
+- **SQL Server (`AddDistributedSqlServerCache`)** – For persistent storage.
+- **Redis (`AddStackExchangeRedisCache`)** – For scalable, distributed sessions.
+
+Example for Redis:
+```csharp
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+});
+builder.Services.AddSession();
+```
+
+---
+
+### **Final Notes**
+- **Session data is stored on the server**, and a cookie is used to identify the session.
+- **Ensure session is enabled before using it in controllers** (`UseSession()` must be called).
+- **Use proper storage options (Redis/SQL)** for distributed applications.
+
+Would you like a complete working project setup? 😊
