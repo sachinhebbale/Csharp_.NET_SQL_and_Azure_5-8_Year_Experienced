@@ -1,0 +1,210 @@
+Since you're preparing for a **REST API interview**, I'll break it down into key areas with example questions and explanations. Let me know if you want to dive deeper into any topic.
+
+---
+
+## 🔹 **Fundamentals of REST API**
+1. **What is REST?**
+   - REST (Representational State Transfer) is an architectural style that defines constraints for creating web services.
+   - Uses HTTP methods like `GET`, `POST`, `PUT`, `DELETE`.
+   - Stateless communication.
+
+2. **What are the principles of REST?**
+   - **Client-Server Architecture**
+   - **Statelessness** (Each request is independent)
+   - **Cacheability**
+   - **Layered System**
+   - **Uniform Interface** (Standardized resource access)
+   - **Code on Demand** (Optional)
+
+3. **What is the difference between REST and SOAP?**
+   | Feature | REST | SOAP |
+   |---------|------|------|
+   | Protocol | HTTP | HTTP, SMTP, TCP |
+   | Format | JSON, XML | XML |
+   | Performance | Faster | Slower |
+   | Stateless | Yes | No |
+
+---
+
+## 🔹 **HTTP Methods & Status Codes**
+1. **Explain the commonly used HTTP methods in REST API.**
+   - `GET`: Retrieve resource.
+   - `POST`: Create new resource.
+   - `PUT`: Update/replace a resource.
+   - `PATCH`: Partially update a resource.
+   - `DELETE`: Remove resource.
+
+2. **What are common HTTP status codes in REST API?**
+   - `200 OK`: Successful request.
+   - `201 Created`: Resource created.
+   - `204 No Content`: Successful but no response body.
+   - `400 Bad Request`: Invalid request data.
+   - `401 Unauthorized`: Authentication needed.
+   - `403 Forbidden`: No permission.
+   - `404 Not Found`: Resource does not exist.
+   - `500 Internal Server Error`: Generic server failure.
+
+---
+
+## 🔹 **API Authentication & Security**
+1. **How do you secure a REST API?**
+   - **Authentication:** OAuth2, JWT, API Keys.
+   - **Authorization:** Role-based access control (RBAC).
+   - **Rate Limiting:** To prevent abuse (e.g., API throttling).
+   - **Data Encryption:** Use HTTPS.
+   - **Input Validation:** Prevent SQL injection & XSS.
+
+2. **What is the difference between Authentication and Authorization?**
+   - **Authentication** → Who are you? (Login process)
+   - **Authorization** → What can you do? (Permissions)
+
+3. **Explain JWT (JSON Web Token).**
+   - Encoded token format used for authentication.
+   - Structure: `Header.Payload.Signature`.
+   - Example: `eyJhbGciOiJIUzI1...`
+
+---
+
+## 🔹 **REST API Design Best Practices**
+1. **How do you design RESTful endpoints?**
+   - Use **nouns** instead of verbs (`/users` instead of `/getUsers`).
+   - Use **plural resource names** (`/orders`, `/products`).
+   - Use **query parameters** for filtering (`/products?category=electronics`).
+   - Return **meaningful error messages** (`{ "error": "User not found" }`).
+
+2. **What is HATEOAS in REST API?**
+   - **Hypermedia as the Engine of Application State**.
+   - API responses include links to related resources.
+   - Example:
+     ```json
+     {
+       "id": 1,
+       "name": "Laptop",
+       "links": [
+         { "rel": "self", "href": "/products/1" },
+         { "rel": "reviews", "href": "/products/1/reviews" }
+       ]
+     }
+     ```
+
+---
+
+## 🔹 **Performance Optimization**
+1. **How do you optimize a REST API?**
+   - **Use caching** (E.g., Redis, HTTP cache headers).
+   - **Enable pagination** for large datasets (`/users?page=2&limit=10`).
+   - **Use compression** (Gzip responses).
+   - **Optimize database queries** (Indexing, NoSQL for high read performance).
+   - **Use CDN** to reduce latency.
+
+2. **What is the difference between synchronous and asynchronous API calls?**
+   - **Synchronous**: Client waits for response (Blocking).
+   - **Asynchronous**: Client does not wait (Non-blocking, uses WebSockets or background processing).
+
+---
+
+## 🔹 **Practical Coding Questions**
+1. **How do you implement a RESTful API in C# .NET Core?**
+   - Create a Web API project (`dotnet new webapi`).
+   - Define a controller:
+     ```csharp
+     [Route("api/[controller]")]
+     [ApiController]
+     public class ProductsController : ControllerBase
+     {
+         [HttpGet]
+         public IActionResult GetProducts()
+         {
+             var products = new List<string> { "Laptop", "Phone" };
+             return Ok(products);
+         }
+     }
+     ```
+   - Run the API and test with Postman.
+
+2. **How do you implement API versioning in .NET Core?**
+   - Use `[ApiVersion]` attribute:
+     ```csharp
+     [ApiVersion("1.0")]
+     [Route("api/v{version:apiVersion}/products")]
+     public class ProductsV1Controller : ControllerBase { }
+     ```
+
+---
+
+## 🔹 **Database & State Handling**
+1. **How do you handle database transactions in REST API?**
+   - Use **Unit of Work** pattern.
+   - Implement transactions using **Entity Framework Core**:
+     ```csharp
+     using var transaction = _context.Database.BeginTransaction();
+     try
+     {
+         _context.Products.Add(new Product { Name = "Laptop" });
+         _context.SaveChanges();
+         transaction.Commit();
+     }
+     catch
+     {
+         transaction.Rollback();
+     }
+     ```
+
+2. **How do you handle concurrency in REST API?**
+   - **Optimistic concurrency** (ETag headers, timestamps).
+   - **Pessimistic locking** (Locking a row in the database).
+
+---
+
+## 🔹 **Advanced Topics**
+1. **What is GraphQL and how does it compare to REST?**
+   - **GraphQL** allows flexible queries (client specifies fields needed).
+   - **REST** has fixed endpoints and responses.
+   - Example GraphQL query:
+     ```graphql
+     {
+       user(id: 1) {
+         name
+         email
+       }
+     }
+     ```
+
+2. **What is the difference between REST API and gRPC?**
+   - gRPC uses **Protocol Buffers** (binary format, faster).
+   - REST uses **JSON** (text-based, more readable).
+   - gRPC is **better for microservices**, REST is **better for web APIs**.
+
+---
+
+## 🔹 **Scenario-Based Questions**
+1. **How would you design a rate-limited REST API?**
+   - Use API Gateway (e.g., Nginx, AWS API Gateway).
+   - Implement middleware to count requests per user.
+   - Example in .NET Core:
+     ```csharp
+     services.AddRateLimiter(options =>
+     {
+         options.AddFixedWindowLimiter("fixed", opt =>
+         {
+             opt.PermitLimit = 10;
+             opt.Window = TimeSpan.FromMinutes(1);
+         });
+     });
+     ```
+
+2. **How do you debug a failing REST API call?**
+   - Check **request payload** and **headers**.
+   - Inspect **API logs** and **error stack traces**.
+   - Use **Postman** or **cURL** to test API.
+   - Check **CORS issues** in browser console.
+
+---
+
+## 🔹 **Final Tips**
+✅ Practice building a simple API in **.NET Core**.  
+✅ Revise **JWT authentication, caching, API versioning**.  
+✅ Use **Postman** for testing API calls.  
+✅ Be ready for **scenario-based** and **coding questions**.  
+
+Let me know if you need more details on any topic! 🚀

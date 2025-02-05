@@ -1,0 +1,81 @@
+## **Web API vs REST API: Key Differences & Comparison**  
+
+### **1. What is a Web API?**
+- A **Web API (Application Programming Interface)** is a broad term for any API that communicates over the web using HTTP.
+- It can use different architectures such as **REST, SOAP, GraphQL, or RPC**.
+- Web APIs allow applications to interact over the internet.
+
+💡 **Example:**  
+- A **SOAP-based API** or a **GraphQL API** is a Web API but not a REST API.
+
+---
+
+### **2. What is a REST API?**
+- A **REST API (Representational State Transfer API)** is a type of **Web API** that follows the **REST architectural style**.
+- It uses **stateless requests, HTTP methods (GET, POST, PUT, DELETE), and resource-based URIs**.
+
+💡 **Example:**  
+- A REST API for managing users:
+  ```http
+  GET /users → Fetch all users
+  POST /users → Create a new user
+  ```
+
+---
+
+## **3. Key Differences: Web API vs REST API**
+| Feature         | Web API | REST API |
+|---------------|---------|---------|
+| **Definition** | Any API that runs over the web. | A specific type of Web API that follows REST principles. |
+| **Architecture** | Can be **SOAP, REST, GraphQL, RPC, or WebSockets**. | Strictly follows **REST principles**. |
+| **Protocol** | Can use **HTTP, WebSockets, TCP, etc.** | Uses **only HTTP**. |
+| **Data Format** | Can use **XML, JSON, HTML, or plain text**. | Typically **JSON** (sometimes XML). |
+| **Statefulness** | Can be **stateful or stateless**. | Must be **stateless**. |
+| **Caching** | May or may not support caching. | Supports **caching** for performance improvement. |
+| **Security** | Uses **API keys, OAuth, JWT, Basic Auth**. | Same security methods but typically **stateless authentication (JWT, OAuth)**. |
+| **Use Cases** | SOAP APIs, GraphQL APIs, RPC APIs, etc. | RESTful services for CRUD operations, microservices, etc. |
+
+---
+
+## **4. When to Use Web API vs REST API?**
+✔ **Use Web API when:**
+- You need support for **SOAP, GraphQL, or WebSockets**.
+- You require **stateful communication**.
+
+✔ **Use REST API when:**
+- You want a **lightweight, scalable, and stateless API**.
+- You need a **resource-based architecture** with HTTP methods.
+
+---
+
+## **5. Example Comparison**
+### **Web API (SOAP) Example**
+```xml
+POST /users
+Content-Type: application/xml
+
+<user>
+  <name>John</name>
+  <email>john@example.com</email>
+</user>
+```
+
+### **REST API Example**
+```http
+POST /users
+Content-Type: application/json
+
+{
+  "name": "John",
+  "email": "john@example.com"
+}
+```
+
+---
+
+### **6. Summary**
+- **All REST APIs are Web APIs, but not all Web APIs are REST APIs.**
+- REST APIs are simpler, stateless, and use HTTP methods efficiently.
+- Web APIs include REST, SOAP, GraphQL, and more.
+
+Would you like a practical example of building a **REST API in .NET Core**? 🚀
