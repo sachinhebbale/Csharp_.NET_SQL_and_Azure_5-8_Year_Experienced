@@ -1,0 +1,22 @@
+Generics in programming allow you to write flexible, reusable, and type-safe code by enabling functions, classes, and data structures to operate with different data types without sacrificing type safety.
+
+How Generics Work
+Generics use type parameters (like <T>, where T represents a placeholder type) that can be substituted with concrete types when the code is used. This prevents unnecessary code duplication while ensuring type correctness at compile time.
+
+
+// Generic method
+public class Utils {
+    public static void Print<T>(T item) {
+        Console.WriteLine(item);
+    }
+}
+
+// Usage
+Utils.Print(123);   // Works with int
+Utils.Print("Hello"); // Works with string
+
+
+Advantages of Generics
+Type Safety: Prevents runtime errors by enforcing type correctness at compile time.
+Code Reusability: Eliminates redundancy and avoids writing multiple versions of the same logic for different data types.
+Performance Optimization: Avoids unnecessary type casting and boxing/unboxing.
