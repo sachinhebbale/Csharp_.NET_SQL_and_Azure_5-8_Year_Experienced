@@ -1,0 +1,118 @@
+In LINQ, you can use the `join` keyword to perform SQL-style joins between collections. LINQ supports **inner joins**, **group joins**, and **left (outer) joins**.
+
+---
+
+### **1. Inner Join (Equivalent to SQL INNER JOIN)**
+An inner join returns only matching elements from both collections.
+
+#### **Example: Join two lists on a common key**
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        var students = new List<Student>
+        {
+            new Student { Id = 1, Name = "Alice", ClassId = 101 },
+            new Student { Id = 2, Name = "Bob", ClassId = 102 },
+            new Student { Id = 3, Name = "Charlie", ClassId = 101 }
+        };
+
+        var classes = new List<Class>
+        {
+            new Class { ClassId = 101, ClassName = "Math" },
+            new Class { ClassId = 102, ClassName = "Science" }
+        };
+
+        var result = from student in students
+                     join cls in classes on student.ClassId equals cls.ClassId
+                     select new { student.Name, cls.ClassName };
+
+        foreach (var item in result)
+        {
+            Console.WriteLine($"{item.Name} is in {item.ClassName} class.");
+        }
+    }
+}
+
+class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int ClassId { get; set; }
+}
+
+class Class
+{
+    public int ClassId { get; set; }
+    public string ClassName { get; set; }
+}
+```
+### **Output**
+```
+Alice is in Math class.
+Charlie is in Math class.
+Bob is in Science class.
+```
+
+---
+
+### **2. Group Join (Equivalent to SQL GROUP BY)**
+A group join returns a collection of related items.
+
+#### **Example: Group Students by Class**
+```csharp
+var groupedResult = from cls in classes
+                    join student in students on cls.ClassId equals student.ClassId into studentGroup
+                    select new { cls.ClassName, Students = studentGroup };
+
+foreach (var item in groupedResult)
+{
+    Console.WriteLine($"Class: {item.ClassName}");
+    foreach (var student in item.Students)
+    {
+        Console.WriteLine($"  - {student.Name}");
+    }
+}
+```
+### **Output**
+```
+Class: Math
+  - Alice
+  - Charlie
+Class: Science
+  - Bob
+```
+
+---
+
+### **3. Left Join (Equivalent to SQL LEFT JOIN)**
+A left join returns all elements from the left collection and matches from the right. If there is no match, it returns `null`.
+
+#### **Example: Show students with or without a class**
+```csharp
+var leftJoinResult = from student in students
+                     join cls in classes on student.ClassId equals cls.ClassId into classGroup
+                     from cls in classGroup.DefaultIfEmpty() // Ensures left join behavior
+                     select new { student.Name, ClassName = cls?.ClassName ?? "No Class" };
+
+foreach (var item in leftJoinResult)
+{
+    Console.WriteLine($"{item.Name} is in {item.ClassName}");
+}
+```
+### **Output**
+```
+Alice is in Math
+Charlie is in Math
+Bob is in Science
+```
+(If a student had no matching class, it would show "No Class.")
+
+---
+
+Let me know if you need more clarification! 🚀
