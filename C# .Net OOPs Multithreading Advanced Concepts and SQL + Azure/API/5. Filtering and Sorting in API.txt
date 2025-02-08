@@ -1,0 +1,113 @@
+To enhance your pagination implementation, let’s add **filtering and sorting**.
+
+---
+
+## **1. Update Pagination Parameters**
+Modify the `PaginationParams` class to include **sorting** and **filtering**.
+
+```csharp
+public class PaginationParams
+{
+    private const int MaxPageSize = 50;
+    public int PageNumber { get; set; } = 1;
+
+    private int _pageSize = 10;
+    public int PageSize
+    {
+        get => _pageSize;
+        set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
+    }
+
+    public string SortBy { get; set; } = "Id"; // Default sorting column
+    public bool IsDescending { get; set; } = false; // Sorting order
+    public string SearchQuery { get; set; } // Filtering criteria
+}
+```
+
+---
+
+## **2. Apply Filtering, Sorting & Pagination in the Controller**
+
+Modify your API endpoint:
+
+```csharp
+[HttpGet]
+public async Task<IActionResult> GetItems([FromQuery] PaginationParams paginationParams)
+{
+    var query = _context.Items.AsQueryable();
+
+    // **1. Apply Filtering**
+    if (!string.IsNullOrEmpty(paginationParams.SearchQuery))
+    {
+        query = query.Where(i => i.Name.Contains(paginationParams.SearchQuery));
+    }
+
+    // **2. Apply Sorting**
+    if (!string.IsNullOrEmpty(paginationParams.SortBy))
+    {
+        query = paginationParams.IsDescending
+            ? query.OrderByDescending(e => EF.Property<object>(e, paginationParams.SortBy))
+            : query.OrderBy(e => EF.Property<object>(e, paginationParams.SortBy));
+    }
+
+    // **3. Apply Pagination**
+    var totalRecords = await query.CountAsync();
+    var pagedItems = await query
+        .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+        .Take(paginationParams.PageSize)
+        .ToListAsync();
+
+    // **4. Return the Response**
+    return Ok(new
+    {
+        PageNumber = paginationParams.PageNumber,
+        PageSize = paginationParams.PageSize,
+        TotalRecords = totalRecords,
+        Data = pagedItems
+    });
+}
+```
+
+---
+
+## **3. Query API**
+Use query parameters:
+
+### **Example 1: Paginated Request**
+```
+GET /api/items?pageNumber=2&pageSize=10
+```
+
+### **Example 2: Filtering by Name**
+```
+GET /api/items?searchQuery=apple
+```
+
+### **Example 3: Sorting by Name in Descending Order**
+```
+GET /api/items?sortBy=Name&isDescending=true
+```
+
+---
+
+### **Example API Response**
+```json
+{
+    "pageNumber": 1,
+    "pageSize": 10,
+    "totalRecords": 100,
+    "data": [
+        { "id": 1, "name": "Item 1" },
+        { "id": 2, "name": "Item 2" }
+    ]
+}
+```
+
+---
+
+### **✅ Features Added:**
+✅ **Pagination**  
+✅ **Filtering** (Search by Name)  
+✅ **Sorting** (Custom column & order)  
+
+Would you like to extend it further with **dynamic filtering on multiple fields**? 🚀

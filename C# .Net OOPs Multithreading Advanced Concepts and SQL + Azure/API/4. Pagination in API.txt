@@ -1,0 +1,110 @@
+Pagination is essential in APIs to manage large datasets efficiently. Here’s how you can implement pagination in a REST API using C# and ASP.NET Core.
+
+---
+
+### **1. Define the Pagination Parameters**
+Typically, you use `pageNumber` and `pageSize` as query parameters.
+
+```csharp
+public class PaginationParams
+{
+    private const int MaxPageSize = 50;
+    public int PageNumber { get; set; } = 1;
+
+    private int _pageSize = 10;
+    public int PageSize
+    {
+        get => _pageSize;
+        set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
+    }
+}
+```
+
+using Microsoft.EntityFrameworkCore;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+    
+    public DbSet<Item> Items { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Item>().HasData(
+            new Item { Id = 1, Name = "Item A", Price = 10.99m },
+            new Item { Id = 2, Name = "Item B", Price = 15.49m },
+            new Item { Id = 3, Name = "Item C", Price = 9.99m },
+            new Item { Id = 4, Name = "Item D", Price = 20.00m }
+        );
+    }
+}
+
+---
+
+### **2. Apply Pagination in the Controller**
+Modify your API endpoint to accept pagination parameters and use `.Skip()` and `.Take()` in LINQ.
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+[Route("api/items")]
+[ApiController]
+public class ItemsController : ControllerBase
+{
+    private readonly AppDbContext _context;
+
+    public ItemsController(AppDbContext context)
+    {
+        _context = context;
+    }
+
+```csharp
+[HttpGet]
+public async Task<IActionResult> GetItems([FromQuery] PaginationParams paginationParams)
+{
+    var query = _context.Items.AsQueryable();
+    
+    var pagedItems = await query
+        .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+        .Take(paginationParams.PageSize)
+        .ToListAsync();
+
+    return Ok(new
+    {
+        PageNumber = paginationParams.PageNumber,
+        PageSize = paginationParams.PageSize,
+        TotalRecords = await query.CountAsync(),
+        Data = pagedItems
+    });
+}
+```
+
+---
+
+### **3. Add Response Metadata for Pagination**
+Include `TotalRecords` to help the frontend manage pagination.
+
+**Example API Response:**
+```json
+{
+    "pageNumber": 1,
+    "pageSize": 10,
+    "totalRecords": 100,
+    "data": [
+        { "id": 1, "name": "Item 1" },
+        { "id": 2, "name": "Item 2" }
+    ]
+}
+```
+
+---
+
+### **4. Query API**
+Use query parameters:
+```
+GET /api/items?pageNumber=2&pageSize=10
+```
+
+---
+
+Would you like to include filtering and sorting along with pagination?
