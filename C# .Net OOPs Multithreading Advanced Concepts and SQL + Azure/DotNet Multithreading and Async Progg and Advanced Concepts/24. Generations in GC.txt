@@ -1,0 +1,90 @@
+### **Garbage Collection (GC) Generations in C# .NET**  
+In C#, **Garbage Collection (GC)** is responsible for **automatic memory management**. To improve efficiency, the **.NET Garbage Collector (GC)** divides objects into **three generations**:
+
+| **Generation** | **Description** |
+|--------------|----------------|
+| **Gen 0 (Youngest)** | Short-lived objects (temporary variables, method-scoped objects) |
+| **Gen 1** | Medium-lived objects (objects surviving one GC cycle) |
+| **Gen 2 (Oldest)** | Long-lived objects (static objects, global variables, large objects) |
+
+---
+
+## **1. How Generations Work?**
+- **Gen 0**: Objects are allocated here first. **Frequent GC occurs** in this generation.
+- **Gen 1**: If an object survives a **Gen 0 GC cycle**, it is promoted to Gen 1.
+- **Gen 2**: If an object survives a **Gen 1 GC cycle**, it is moved to Gen 2.
+- **Large Object Heap (LOH)**: Objects **> 85 KB** are directly allocated in Gen 2.
+
+### **Garbage Collection Triggers**
+- **Gen 0 GC runs most frequently.**  
+- **Gen 1 is cleaned less often than Gen 0.**  
+- **Gen 2 GC runs the least frequently (full GC).**  
+
+---
+
+## **2. Example: Checking Object Generation**
+C# provides the `GC.GetGeneration(object)` method to check an object's generation.
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        object obj = new object();  // Allocated in Gen 0
+        Console.WriteLine("Gen: " + GC.GetGeneration(obj));  // Expected: 0
+
+        GC.Collect();  // Forcing GC
+        Console.WriteLine("Gen after GC: " + GC.GetGeneration(obj));  // Might be 1 if survived
+
+        GC.Collect();  // Forcing GC again
+        Console.WriteLine("Final Gen: " + GC.GetGeneration(obj));  // Might be 2 if survived
+    }
+}
+```
+
+---
+
+## **3. Large Object Heap (LOH) & GC Behavior**
+- Objects **larger than 85 KB** are **directly allocated in Gen 2**.
+- LOH is **only cleaned during a full GC (Gen 2 GC)**.
+
+```csharp
+byte[] largeArray = new byte[100000]; // Directly in Gen 2
+Console.WriteLine(GC.GetGeneration(largeArray)); // Output: 2
+```
+
+---
+
+## **4. Forcing Garbage Collection**
+Although **GC runs automatically**, we can trigger it manually:
+
+```csharp
+GC.Collect(0); // Collects only Gen 0
+GC.Collect(1); // Collects Gen 0 and Gen 1
+GC.Collect(2); // Full GC (Gen 0, Gen 1, Gen 2)
+GC.WaitForPendingFinalizers(); // Ensures Finalize methods execute
+```
+
+> **⚠️ Note:** Avoid using `GC.Collect()` unless necessary, as it can impact performance.
+
+---
+
+## **5. Generational GC Optimization**
+- **Short-lived objects** (e.g., local variables) remain in Gen 0 and are cleaned frequently.
+- **Long-lived objects** (e.g., static objects) are promoted to Gen 2, reducing GC overhead.
+- **Pinned objects** (like `GCHandle`) may prevent memory from being freed.
+
+---
+
+## **6. Summary**
+| **Concept** | **Details** |
+|------------|------------|
+| **Gen 0** | Short-lived, frequent GC |
+| **Gen 1** | Mid-life objects, less frequent GC |
+| **Gen 2** | Long-lived, least frequent GC |
+| **Large Object Heap (LOH)** | Directly allocated in Gen 2, rarely collected |
+| **`GC.Collect()`** | Can force GC but should be used sparingly |
+
+Would you like a real-world example, such as **GC tuning in ASP.NET Core**? 😊
