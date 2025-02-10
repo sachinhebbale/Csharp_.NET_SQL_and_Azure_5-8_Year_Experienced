@@ -1,0 +1,117 @@
+### **`Func<>` and `Action<>` in C#**  
+`Func<>` and `Action<>` are **built-in delegate types** in C# used to pass methods as parameters in a flexible way.
+
+---
+
+## **1. `Func<>` Delegate**
+- Used when the method **returns a value**.
+- Supports **up to 16 input parameters**.
+- The **last type parameter** is always the **return type**.
+
+### **Syntax**
+```csharp
+Func<param1Type, param2Type, ..., returnType> methodName = Method;
+```
+
+### **Example**
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Func with two int parameters and an int return type
+        Func<int, int, int> add = (a, b) => a + b;
+        
+        int result = add(10, 20);
+        Console.WriteLine("Addition Result: " + result); // Output: 30
+    }
+}
+```
+📌 **Key Points:**
+- `Func<int, int, int>` means **two int parameters, returns int**.
+- Uses **lambda expression** `=>` for a concise function body.
+
+---
+
+## **2. `Action<>` Delegate**
+- Used when the method **does not return a value (`void`)**.
+- Supports **up to 16 input parameters**.
+- No return type.
+
+### **Syntax**
+```csharp
+Action<param1Type, param2Type, ...> methodName = Method;
+```
+
+### **Example**
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Action with two string parameters
+        Action<string, string> greet = (firstName, lastName) =>
+        {
+            Console.WriteLine($"Hello, {firstName} {lastName}!");
+        };
+
+        greet("John", "Doe"); // Output: Hello, John Doe!
+    }
+}
+```
+📌 **Key Points:**
+- `Action<string, string>` takes **two string parameters, no return value**.
+- Uses **lambda** to define inline behavior.
+
+---
+
+## **3. `Func<>` vs `Action<>`**
+| Feature | `Func<>` | `Action<>` |
+|---------|---------|-----------|
+| **Return Type** | Must return a value | No return value (`void`) |
+| **Usage** | When a method needs to return data | When a method only performs an action |
+| **Example** | `Func<int, int, int> add = (a, b) => a + b;` | `Action<string> print = msg => Console.WriteLine(msg);` |
+
+---
+
+## **4. Real-World Example**
+### **Using `Func<>` and `Action<>` together**
+```csharp
+using System;
+
+class Program
+{
+    static void ProcessNumbers(int a, int b, Func<int, int, int> operation, Action<int> resultPrinter)
+    {
+        int result = operation(a, b); // Perform calculation
+        resultPrinter(result); // Print result
+    }
+
+    static void Main()
+    {
+        Func<int, int, int> multiply = (x, y) => x * y;
+        Action<int> printResult = result => Console.WriteLine("Result: " + result);
+
+        ProcessNumbers(5, 4, multiply, printResult); // Output: Result: 20
+    }
+}
+```
+✅ **Explanation:**
+- `Func<int, int, int>` **multiplies numbers** and returns a result.
+- `Action<int>` **prints the result**.
+- `ProcessNumbers` method **accepts both** and executes them dynamically.
+
+---
+
+### **When to Use?**
+| Scenario | Use `Func<>` | Use `Action<>` |
+|----------|------------|--------------|
+| Need to **return a value** | ✅ Yes | ❌ No |
+| Need to **perform an action** (like logging) | ❌ No | ✅ Yes |
+| **Passing functions as arguments** | ✅ Yes | ✅ Yes |
+
+Would you like an example using `Predicate<>` as well? 😊
