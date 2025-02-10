@@ -1,0 +1,62 @@
+`Comparison<T>` is a delegate in C# used to compare two objects of type `T`. It's a way to define custom sorting logic. The delegate takes two parameters of type `T` and returns an `int` value that indicates their relative order.
+
+Here's the syntax for `Comparison<T>`:
+
+```csharp
+public delegate int Comparison<T>(T x, T y);
+```
+
+The return value of the delegate has three possible outcomes:
+
+- Less than zero: `x` is less than `y`.
+- Zero: `x` is equal to `y`.
+- Greater than zero: `x` is greater than `y`.
+
+This delegate is often used with sorting methods like `List<T>.Sort`, where you can specify how to compare two elements of the list. For example:
+
+### Example: Custom Sorting with `Comparison<T>`
+
+```csharp
+List<int> numbers = new List<int> { 5, 3, 8, 1, 2 };
+
+// Using Comparison<T> to sort in descending order
+numbers.Sort((x, y) => y.CompareTo(x));
+
+foreach (int number in numbers)
+{
+    Console.WriteLine(number);
+}
+```
+
+In this example, a lambda expression is used to create a `Comparison<int>` delegate for sorting the list in descending order.
+
+### Use Case for Complex Types
+
+When working with complex types (like custom objects), `Comparison<T>` allows you to specify sorting based on specific fields or properties:
+
+```csharp
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+List<Person> people = new List<Person>
+{
+    new Person { Name = "Alice", Age = 25 },
+    new Person { Name = "Bob", Age = 30 },
+    new Person { Name = "Charlie", Age = 20 }
+};
+
+// Sort by Age
+people.Sort((p1, p2) => p1.Age.CompareTo(p2.Age));
+
+foreach (var person in people)
+{
+    Console.WriteLine($"{person.Name}, {person.Age}");
+}
+```
+
+Here, the `Comparison<Person>` is defined inline to sort the list of `Person` objects by their `Age` property.
+
+Let me know if you want more examples or have a specific scenario in mind!

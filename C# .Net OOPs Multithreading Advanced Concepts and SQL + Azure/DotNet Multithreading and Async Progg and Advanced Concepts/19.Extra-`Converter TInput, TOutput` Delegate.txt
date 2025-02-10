@@ -1,0 +1,96 @@
+`Converter<TInput, TOutput>` is a delegate in C# that defines a method that takes an input of type `TInput` and returns a result of type `TOutput`. It is often used in scenarios where you need to convert objects from one type to another, particularly when working with collections.
+
+### Syntax of `Converter<TInput, TOutput>`
+```csharp
+public delegate TOutput Converter<in TInput, out TOutput>(TInput input);
+```
+
+### Key Points:
+1. **Input Type**: `TInput` represents the type of the input parameter.
+2. **Output Type**: `TOutput` represents the type of the output result.
+3. **Return Value**: The method returns a result of type `TOutput` after processing the input of type `TInput`.
+
+### Typical Use Case:
+`Converter<TInput, TOutput>` is most commonly used with methods like `Array.ConvertAll<TInput, TOutput>`, which converts an array of one type to an array of another type by applying the conversion logic.
+
+### Example 1: Basic Conversion from `int` to `string`
+```csharp
+// Converter delegate that converts an integer to a string
+Converter<int, string> intToStringConverter = input => input.ToString();
+
+int number = 123;
+string result = intToStringConverter(number);  // Result: "123"
+
+Console.WriteLine(result);  // Output: "123"
+```
+
+In this example, the `Converter<int, string>` delegate converts an `int` to a `string` using the `ToString()` method.
+
+### Example 2: Using `Converter<TInput, TOutput>` with Collections
+
+This example demonstrates using `Converter<TInput, TOutput>` with `Array.ConvertAll` to convert an array of integers to an array of strings.
+
+```csharp
+int[] numbers = { 1, 2, 3, 4, 5 };
+
+// Use Array.ConvertAll with a Converter delegate to convert int[] to string[]
+string[] stringArray = Array.ConvertAll(numbers, new Converter<int, string>(x => $"Number {x}"));
+
+// Output the result
+foreach (var str in stringArray)
+{
+    Console.WriteLine(str);
+}
+```
+
+### Output:
+```
+Number 1
+Number 2
+Number 3
+Number 4
+Number 5
+```
+
+### Example 3: Converting Complex Types
+
+You can also use `Converter<TInput, TOutput>` to convert between complex types. For example, converting a list of `Person` objects to their names as strings:
+
+```csharp
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+List<Person> people = new List<Person>
+{
+    new Person { Name = "Alice", Age = 25 },
+    new Person { Name = "Bob", Age = 30 },
+    new Person { Name = "Charlie", Age = 20 }
+};
+
+// Use Converter to extract names from the list of Person objects
+Converter<Person, string> personToName = person => person.Name;
+
+string[] names = people.ConvertAll(personToName).ToArray();
+
+foreach (var name in names)
+{
+    Console.WriteLine(name);
+}
+```
+
+### Output:
+```
+Alice
+Bob
+Charlie
+```
+
+### Summary of `Converter<TInput, TOutput>`:
+- **Purpose**: To convert one type to another, especially in scenarios involving arrays or lists.
+- **Usage**: Typically used with methods like `Array.ConvertAll` or `List<T>.ConvertAll` to transform collections.
+- **Syntax**: It takes a `TInput` as input and returns a `TOutput`.
+
+It's useful in various scenarios where type conversion is needed, especially when dealing with generic collections or transforming objects. Let me know if you'd like further clarification or examples!

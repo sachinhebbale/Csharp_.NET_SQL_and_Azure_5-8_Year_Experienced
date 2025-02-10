@@ -1,0 +1,96 @@
+Here's a simple example of using events in C#. An event is a way for a class to notify other classes or objects when something of interest occurs. Events are typically used in scenarios like button clicks in UI applications, where the button click triggers an event, and any number of methods can respond to that event.
+
+### Example: Basic Event in C#
+
+```csharp
+using System;
+
+namespace EventExample
+{
+    // Declare a delegate for the event handler
+    public delegate void NotifyEventHandler(string message);
+
+    // Publisher class that defines an event
+    public class Process
+    {
+        // Declare the event using the delegate
+        public event NotifyEventHandler ProcessCompleted;
+
+        public void StartProcess()
+        {
+            Console.WriteLine("Process Started...");
+
+            // Simulate some work by sleeping for 2 seconds
+            System.Threading.Thread.Sleep(2000);
+
+            Console.WriteLine("Process Finished.");
+
+            // Raise the event
+            OnProcessCompleted("Process completed successfully!");
+        }
+
+        // Method to raise the event
+        protected virtual void OnProcessCompleted(string message)
+        {
+            if (ProcessCompleted != null)
+            {
+                ProcessCompleted(message);
+            }
+        }
+    }
+
+    // Subscriber class that subscribes to the event
+    public class Subscriber
+    {
+        public void OnProcessCompleted(string message)
+        {
+            Console.WriteLine("Subscriber received this message: " + message);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Process process = new Process();
+            Subscriber subscriber = new Subscriber();
+
+            // Subscribe to the event
+            process.ProcessCompleted += subscriber.OnProcessCompleted;
+
+            // Start the process
+            process.StartProcess();
+        }
+    }
+}
+```
+
+### Explanation:
+
+1. **Delegate Declaration**: `public delegate void NotifyEventHandler(string message);`
+   - This delegate will be used to define the signature of the event handler method. It can point to any method that takes a `string` as a parameter and returns `void`.
+
+2. **Publisher Class**:
+   - The `Process` class has an event `ProcessCompleted` of type `NotifyEventHandler`.
+   - The `StartProcess` method simulates some work and then raises the `ProcessCompleted` event by calling `OnProcessCompleted`.
+   - The `OnProcessCompleted` method checks if there are any subscribers to the event and, if so, invokes the event.
+
+3. **Subscriber Class**:
+   - The `Subscriber` class contains the method `OnProcessCompleted` that matches the signature of the `NotifyEventHandler` delegate.
+   - This method will be called when the `ProcessCompleted` event is raised.
+
+4. **Event Subscription**:
+   - In the `Main` method, an instance of `Process` is created, and an instance of `Subscriber` is created.
+   - The `Subscriber` instance subscribes to the `ProcessCompleted` event using the `+=` operator.
+
+5. **Starting the Process**:
+   - The `StartProcess` method is called on the `Process` instance, which triggers the event once the process is completed.
+
+### Output:
+```
+Process Started...
+Process Finished.
+Subscriber received this message: Process completed successfully!
+```
+
+This example demonstrates how to declare, raise, and handle events in C#. The `Process` class is responsible for raising the event, and the `Subscriber` class handles the event when it occurs.

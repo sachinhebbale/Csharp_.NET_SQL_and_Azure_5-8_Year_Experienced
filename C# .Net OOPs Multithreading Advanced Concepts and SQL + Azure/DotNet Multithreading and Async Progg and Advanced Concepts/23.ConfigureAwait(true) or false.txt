@@ -1,0 +1,51 @@
+`ConfigureAwait(true)` and `ConfigureAwait(false)` are used in **asynchronous programming** in C# to control how the continuation of an async method is scheduled.
+
+---
+
+### **🔹 `ConfigureAwait(true)` (Default Behavior)**
+- Ensures that the **continuation runs on the original synchronization context** (e.g., UI thread in a desktop app).
+- Necessary when updating UI elements in **WPF, WinForms, or Xamarin**.
+
+**Example (Using UI Thread)**
+```csharp
+public async Task LoadDataAsync()
+{
+    await Task.Delay(1000).ConfigureAwait(true); // Runs continuation on the UI thread
+    label.Text = "Data Loaded"; // Allowed since we're back on UI thread
+}
+```
+
+---
+
+### **🔹 `ConfigureAwait(false)` (Performance Optimization)**
+- **Does NOT** capture the synchronization context.
+- The **continuation runs on a thread pool thread** instead of the original context.
+- Recommended for **ASP.NET Core, console apps, and library code** to avoid unnecessary thread switches.
+
+**Example (Optimized for Performance)**
+```csharp
+public async Task<string> FetchDataAsync()
+{
+    await Task.Delay(1000).ConfigureAwait(false); // Runs continuation on a thread pool
+    return "Data Fetched"; // No UI update, so safe to run on a background thread
+}
+```
+
+---
+
+### **🔹 When to Use Each?**
+| Scenario | `ConfigureAwait(true)` | `ConfigureAwait(false)` |
+|----------|-----------------|------------------|
+| UI Applications (WPF, WinForms) | ✅ Needed when updating UI | 🚫 Avoid unless not modifying UI |
+| ASP.NET Core Controllers | 🚫 Not needed (no sync context) | ✅ Recommended |
+| Background Services | 🚫 Not needed | ✅ Recommended |
+| Library Code | 🚫 Avoid (not thread-safe assumption) | ✅ Preferred |
+
+---
+
+### **🔹 Best Practices**
+- **Use `ConfigureAwait(false)`** in library code and **ASP.NET Core** for performance.
+- **Use `ConfigureAwait(true)`** in UI applications when modifying UI elements.
+- **Avoid `ConfigureAwait(false)`** in UI apps unless you explicitly switch back to the UI thread.
+
+Would you like a more advanced example demonstrating multiple `await` calls with `ConfigureAwait`? 🚀

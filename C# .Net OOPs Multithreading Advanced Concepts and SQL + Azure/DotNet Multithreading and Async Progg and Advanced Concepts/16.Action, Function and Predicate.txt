@@ -1,0 +1,74 @@
+https://stackoverflow.com/questions/566860/delegates-predicate-vs-action-vs-func
+
+
+Action
+Documentation:
+
+Encapsulates a method that has no parameters and does not return a value.
+
+Functions passed using the Action type must return void, and can accept from 0 to 16 parameters.
+Action is commonly used when you want a function that can use each element in a container for something, or as callbacks.
+
+public void DoSomething(List<string> lines, Action<string> action)
+{
+    foreach (string str in lines)
+    {
+        action(str);
+    }
+}
+Func
+Documentation:
+
+Encapsulates a method that has no parameters and returns a value of the type specified by the TResult parameter.
+
+Functions passed using the Func type accept from 0 to 16 parameters, and return any type that isn't void.
+Func is commonly used when you want a function that can modify or perform some kind of operation on each element in a container.
+
+//                                                 Parameter Types
+//                                                     ▼▼▼  ▼▼▼
+public List<int> DoMath(List<(int, int)> numbers, Func<int, int, int> operation)
+//                                                               ▲▲▲
+//                                                           Return Type
+{
+    List<int> results = new();
+    foreach (var (left, right) in numbers)
+    {
+        out.Add(operation(left, right));
+    }
+    return out;
+}
+Predicate
+Documentation:
+
+Represents the method that defines a set of criteria and determines whether the specified object meets those criteria.
+
+Functions passed with the Predicate type must return a bool, and must accept exactly 1 parameter.
+
+An example of functions that accept Predicates are LINQ functions like All & Any, which return true if the supplied predicate returns true for all/any of the elements in a list.
+
+public void Example(string str)
+{
+    // The char.IsLetter() function can be used as a predicate
+    //   because it takes 1 char as a parameter, and returns a bool.
+    //          ▼▼▼▼▼▼▼▼▼▼▼▼▼
+    if (str.All(char.IsLetter))
+    {
+        Console.WriteLine("All characters in the string are letters.");
+    }
+}
+Comparison
+Type	Return Type	Min Parameters	Max Parameters
+Action	void	0	16
+Func	Any type that isn't void	0	16
+Predicate	bool	1	1
+The only differences between Action, Func, and Predicate are the types that they return & accept as parameters; they are all delegates and as such they all represent a function passed as a parameter.
+
+You can make your own delegate types in 1 line of code, and use them in the same way as the premade ones.
+
+//         Accepts functions that return a decimal type, and...
+//              ▼▼▼▼▼▼▼
+public delegate decimal Operation(decimal left, decimal right);
+//                                ▲▲▲▲▲▲▲       ▲▲▲▲▲▲▲
+//                    ...take 2 parameters, both of type decimal.
+You can read more about delegates here:
+https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/delegates/

@@ -1,0 +1,77 @@
+In C#, **unmanaged resources** refer to resources that are not directly handled by the .NET runtime's garbage collector. These typically include system-level resources like file handles, network connections, database connections, memory allocated outside the .NET heap, and other OS-level resources. Since the garbage collector only manages memory allocated within the managed heap, it doesn't automatically release these unmanaged resources. Therefore, you need to release them explicitly to avoid memory leaks or resource exhaustion.
+
+### Examples of Unmanaged Resources:
+- **File handles** (e.g., files opened via `FileStream`)
+- **Database connections** (e.g., connections to a SQL server via `SqlConnection`)
+- **Network connections** (e.g., sockets)
+- **Windows handles** (e.g., GDI objects, device contexts)
+- **Memory allocated via P/Invoke** or interop calls (e.g., external C/C++ libraries)
+
+### Managing Unmanaged Resources in C#
+To manage these resources efficiently, you use a mechanism called **deterministic disposal**. This is done using the `IDisposable` interface and its `Dispose()` method.
+
+### 1. **The `IDisposable` Interface**
+Classes that work with unmanaged resources implement the `IDisposable` interface to allow explicit resource cleanup.
+
+#### Example of a class implementing `IDisposable`:
+```csharp
+public class ResourceHolder : IDisposable
+{
+    private IntPtr unmanagedResource; // An example of unmanaged resource
+
+    // Constructor
+    public ResourceHolder()
+    {
+        // Allocate the unmanaged resource here
+        unmanagedResource = // some operation to allocate resource;
+    }
+
+    // Implementing Dispose method for cleaning up unmanaged resources
+    public void Dispose()
+    {
+        // Free the unmanaged resource
+        if (unmanagedResource != IntPtr.Zero)
+        {
+            // Free the resource here (e.g., close a file, release memory, etc.)
+            unmanagedResource = IntPtr.Zero;
+        }
+
+        // Suppress finalization to prevent the destructor from running
+        GC.SuppressFinalize(this);
+    }
+
+    // Destructor (Finalizer) in case Dispose is not called
+    ~ResourceHolder()
+    {
+        Dispose();
+    }
+}
+```
+
+### 2. **The `using` Statement**
+As mentioned earlier, the `using` statement in C# is designed to work with objects that implement `IDisposable`. When an object is created inside a `using` block, its `Dispose()` method is called automatically when the block is exited, either through normal execution or an exception.
+
+#### Example:
+```csharp
+using (var fileStream = new FileStream("file.txt", FileMode.Open))
+{
+    // Work with the file stream
+} // fileStream.Dispose() is called automatically when exiting the block
+```
+
+### 3. **Finalizers (Destructors)**
+A finalizer is used as a backup to clean up unmanaged resources in case `Dispose()` is not called. The finalizer runs during the garbage collection process, but since it's non-deterministic (you don’t know when exactly it will run), it’s better to rely on `Dispose()` for resource cleanup.
+
+#### Example of Finalizer:
+```csharp
+~ResourceHolder()
+{
+    Dispose();
+}
+```
+
+### 4. **Best Practices for Unmanaged Resource Handling**
+- **Always implement `IDisposable`** in classes that hold unmanaged resources.
+- **Prefer `using` blocks** for handling disposable objects. It ensures that resources are freed as soon as they are no longer needed.
+- **Suppress finalization** in `Dispose()` after the resources are released to improve performance (`GC.SuppressFinalize()`).
+- Implement both the **`Dispose()` pattern** and a **finalizer** as a safety net in case `Dispose()` is not called.

@@ -1,0 +1,104 @@
+In C#, `EventHandler<T>` is a generic delegate that represents an event handler method for an event. It is used when you want to pass additional information along with the event through a custom event argument class derived from `EventArgs`. This makes it a more flexible and powerful way of handling events.
+
+### Signature of `EventHandler<T>`
+
+```csharp
+public delegate void EventHandler<TEventArgs>(object sender, TEventArgs e) where TEventArgs : EventArgs;
+```
+
+### Components of `EventHandler<T>`:
+1. **`object sender`**: The object that raises the event.
+2. **`TEventArgs e`**: A parameter that contains event data. `TEventArgs` must derive from the `EventArgs` class.
+
+### Use Cases for `EventHandler<T>`
+`EventHandler<T>` is used when you need to pass extra data along with the event, making it suitable for more complex scenarios compared to the non-generic `EventHandler`, which only sends the basic `EventArgs`.
+
+### Steps to Use `EventHandler<T>`:
+1. Define a class that extends `EventArgs` to hold additional event data.
+2. Declare an event using `EventHandler<T>`.
+3. Raise the event by invoking it and passing the event arguments.
+4. Handle the event by defining a method with the same signature as the delegate.
+
+### Example: Custom Event Arguments with `EventHandler<T>`
+
+#### Step 1: Define a Custom EventArgs Class
+```csharp
+public class MyEventArgs : EventArgs
+{
+    public string Message { get; }
+    public int Value { get; }
+
+    public MyEventArgs(string message, int value)
+    {
+        Message = message;
+        Value = value;
+    }
+}
+```
+
+#### Step 2: Declare an Event Using `EventHandler<T>`
+```csharp
+public class Publisher
+{
+    // Declare the event using EventHandler<T>
+    public event EventHandler<MyEventArgs> MyEvent;
+
+    // Method to raise the event
+    public void RaiseEvent(string message, int value)
+    {
+        MyEventArgs args = new MyEventArgs(message, value);
+        OnMyEvent(args);
+    }
+
+    // Helper method to safely invoke the event
+    protected virtual void OnMyEvent(MyEventArgs e)
+    {
+        MyEvent?.Invoke(this, e);  // Safely raise the event
+    }
+}
+```
+
+#### Step 3: Subscribe and Handle the Event
+```csharp
+public class Subscriber
+{
+    public void OnMyEventHandler(object sender, MyEventArgs e)
+    {
+        Console.WriteLine($"Event triggered by {sender} with message: {e.Message} and value: {e.Value}");
+    }
+}
+```
+
+#### Step 4: Raise the Event
+```csharp
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Publisher publisher = new Publisher();
+        Subscriber subscriber = new Subscriber();
+
+        // Subscribe to the event
+        publisher.MyEvent += subscriber.OnMyEventHandler;
+
+        // Raise the event
+        publisher.RaiseEvent("Hello, Event!", 42);
+    }
+}
+```
+
+### Output:
+```
+Event triggered by Publisher with message: Hello, Event! and value: 42
+```
+
+### Key Points:
+1. **Flexibility**: `EventHandler<T>` allows you to send custom event data along with the event, unlike the standard `EventHandler` which only passes basic event information (`EventArgs`).
+2. **Safety**: The event is raised using `?.Invoke` to ensure it won't throw an exception if no handlers are attached.
+3. **Reusability**: This pattern makes it easy to decouple event publishers from subscribers, as the event handler signature remains standardized.
+
+### When to Use `EventHandler<T>`:
+- **Complex Events**: Use `EventHandler<T>` when your event needs to carry more information beyond a simple notification.
+- **Custom Data**: When you want to pass specific data related to the event through custom event argument classes.
+  
+Let me know if you'd like more examples or details!

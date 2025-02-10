@@ -1,0 +1,85 @@
+`Comparison<T>` and `IComparer<T>` are both used for comparing objects in C#, but they differ in their purpose and how they are implemented.
+
+### 1. `Comparison<T>`
+
+`Comparison<T>` is a delegate that defines a method for comparing two objects of the same type. It's a way to specify the comparison logic directly when needed, typically passed as an argument to methods like `List<T>.Sort`.
+
+#### Key Features:
+- **Delegate**: It's a delegate, meaning it points to a method that defines the comparison logic.
+- **Usage**: Usually passed directly to sorting methods like `List<T>.Sort()`.
+- **One-time use**: It's generally used for a single comparison operation, often inline with lambda expressions.
+- **Signature**: It compares two objects of type `T` and returns an `int` indicating their relative order.
+
+#### Example:
+
+```csharp
+List<int> numbers = new List<int> { 1, 5, 3, 7 };
+
+// Sort using Comparison<T> (via a lambda expression)
+numbers.Sort((x, y) => x.CompareTo(y));
+
+foreach (int number in numbers)
+{
+    Console.WriteLine(number);
+}
+```
+
+### 2. `IComparer<T>`
+
+`IComparer<T>` is an interface that allows you to create custom comparison logic by implementing the `Compare` method. It is more suitable for reusable comparison logic, especially if you need to apply the same comparison logic in multiple places.
+
+#### Key Features:
+- **Interface**: It defines a `Compare` method that must be implemented.
+- **Reusable**: The comparison logic can be reused across different sorting operations by creating instances of the class that implements `IComparer<T>`.
+- **Custom comparator classes**: You typically implement this interface when you want to define custom comparison behavior for a class.
+- **Signature**: The `Compare` method compares two objects of type `T` and returns an `int` to indicate their relative order.
+
+#### Example:
+
+```csharp
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+// Implement IComparer<T> to compare Person objects by Age
+public class PersonAgeComparer : IComparer<Person>
+{
+    public int Compare(Person x, Person y)
+    {
+        return x.Age.CompareTo(y.Age);
+    }
+}
+
+List<Person> people = new List<Person>
+{
+    new Person { Name = "Alice", Age = 25 },
+    new Person { Name = "Bob", Age = 30 },
+    new Person { Name = "Charlie", Age = 20 }
+};
+
+// Use the custom comparer to sort the list
+people.Sort(new PersonAgeComparer());
+
+foreach (var person in people)
+{
+    Console.WriteLine($"{person.Name}, {person.Age}");
+}
+```
+
+### Comparison of `Comparison<T>` and `IComparer<T>`
+
+| Feature             | `Comparison<T>`                  | `IComparer<T>`                    |
+|---------------------|----------------------------------|-----------------------------------|
+| **Type**            | Delegate                         | Interface                         |
+| **Reusable**        | No, generally used inline or one-time | Yes, reusable across multiple places |
+| **Implementation**  | Passed as a method (often lambda) | Requires creating a class to implement `Compare` |
+| **Best for**        | One-time or inline comparison logic | Reusable or complex comparison logic |
+| **Usage Example**   | `list.Sort((x, y) => x.CompareTo(y))` | `list.Sort(new CustomComparer())` |
+
+### When to Use Which?
+- **Use `Comparison<T>`** when you need quick, one-off comparison logic and don't want to create a separate class or reusable component. It's great for inline or simple sorting tasks.
+- **Use `IComparer<T>`** when you need reusable or more complex comparison logic that you can encapsulate in a class, especially if the logic needs to be applied in multiple places or sorted in different ways.
+
+Let me know if you'd like more details on either of them!

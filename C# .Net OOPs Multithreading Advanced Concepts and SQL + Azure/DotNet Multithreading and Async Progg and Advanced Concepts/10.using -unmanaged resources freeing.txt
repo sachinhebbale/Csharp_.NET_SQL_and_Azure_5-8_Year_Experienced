@@ -1,0 +1,74 @@
+In C#, the `using` keyword has two main usages:
+
+1. **`using` Directive** (for namespaces): It simplifies access to types defined in a namespace.
+2. **`using` Statement** (for resource management): It helps manage the lifetime of objects, ensuring that unmanaged resources are disposed of properly.
+
+### 1. `using` Directive (for namespaces)
+This form of `using` is used to include a namespace so that you can refer to its classes, methods, or other members without fully qualifying the namespace.
+
+#### Example:
+```csharp
+using System;
+using System.Collections.Generic;
+
+namespace MyApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Now you can use List without fully qualifying System.Collections.Generic.List
+            List<int> numbers = new List<int> { 1, 2, 3, 4, 5 };
+            Console.WriteLine("Numbers count: " + numbers.Count);
+        }
+    }
+}
+```
+
+### 2. `using` Statement (for resource management)
+The `using` statement is used to work with objects that implement the `IDisposable` interface, ensuring that `Dispose()` is called automatically at the end of the block. This is commonly used when working with streams, database connections, or other unmanaged resources.
+
+#### Syntax:
+```csharp
+using (var resource = new ResourceType())
+{
+    // Work with the resource
+}
+```
+At the end of the `using` block, `Dispose()` is called on the `resource`.
+
+#### Example:
+```csharp
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main()
+    {
+        // Using statement ensures the file is closed and resources are released
+        using (StreamReader reader = new StreamReader("file.txt"))
+        {
+            string content = reader.ReadToEnd();
+            Console.WriteLine(content);
+        } // StreamReader is disposed here
+    }
+}
+```
+
+### C# 8.0 `using` Declaration (Simplified Resource Management)
+In C# 8.0 and later, you can omit the braces and directly declare the `using` statement, which will dispose of the object at the end of the method scope.
+
+#### Example:
+```csharp
+static void Main()
+{
+    using var reader = new StreamReader("file.txt");
+    string content = reader.ReadToEnd();
+    Console.WriteLine(content);
+} // StreamReader is disposed here at the end of the method
+```
+
+### Summary:
+- **`using` Directive**: Simplifies code by allowing you to refer to types in a namespace without fully qualifying them.
+- **`using` Statement**: Ensures that unmanaged resources are properly disposed of, following the `IDisposable` pattern.

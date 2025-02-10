@@ -1,0 +1,99 @@
+`System.Converter<TInput, TOutput>` is a built-in delegate in C# used to represent methods that convert an object of type `TInput` to type `TOutput`. It is primarily used in conversion scenarios where one type needs to be transformed into another, such as converting arrays or lists of one type into another.
+
+### Syntax
+```csharp
+public delegate TOutput Converter<in TInput, out TOutput>(TInput input);
+```
+
+### Key Points:
+- **`TInput`**: The type of the input parameter.
+- **`TOutput`**: The type of the returned value.
+- **Return Type**: The method returns an object of type `TOutput`.
+
+`System.Converter<TInput, TOutput>` is commonly used with methods like:
+- `Array.ConvertAll<TInput, TOutput>()`: Converts an array of type `TInput[]` into an array of type `TOutput[]`.
+- `List<T>.ConvertAll<TOutput>()`: Converts elements of a list to another type.
+
+### Example 1: Using `Array.ConvertAll` with `System.Converter<TInput, TOutput>`
+
+Here’s an example that converts an array of integers into an array of strings using `Array.ConvertAll` and `Converter<TInput, TOutput>`:
+
+```csharp
+int[] numbers = { 1, 2, 3, 4, 5 };
+
+// Convert the integer array to a string array using Array.ConvertAll
+string[] stringArray = Array.ConvertAll(numbers, new Converter<int, string>(x => $"Number {x}"));
+
+// Output the result
+foreach (var str in stringArray)
+{
+    Console.WriteLine(str);
+}
+```
+
+### Output:
+```
+Number 1
+Number 2
+Number 3
+Number 4
+Number 5
+```
+
+In this example:
+- `Array.ConvertAll` takes two arguments: the array of integers and the `Converter<int, string>` delegate, which defines how to convert each `int` into a `string`.
+
+### Example 2: Using `List<T>.ConvertAll`
+
+`List<T>.ConvertAll<TOutput>()` is a method in `List<T>` that accepts a `Converter<TInput, TOutput>` to convert all elements of a list to a new type.
+
+```csharp
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+List<Person> people = new List<Person>
+{
+    new Person { Name = "Alice", Age = 25 },
+    new Person { Name = "Bob", Age = 30 },
+    new Person { Name = "Charlie", Age = 20 }
+};
+
+// Use List.ConvertAll to convert Person objects to their names
+List<string> names = people.ConvertAll(new Converter<Person, string>(person => person.Name));
+
+foreach (var name in names)
+{
+    Console.WriteLine(name);
+}
+```
+
+### Output:
+```
+Alice
+Bob
+Charlie
+```
+
+In this example:
+- We use `List<T>.ConvertAll` with a `Converter<Person, string>` delegate to transform a list of `Person` objects into a list of their names (`string`).
+
+### Example 3: Lambda Expression with `Converter<TInput, TOutput>`
+
+You can often use a lambda expression in place of an explicitly declared `Converter<TInput, TOutput>` delegate. For example, the above `List<T>.ConvertAll` example can be rewritten using a lambda expression directly:
+
+```csharp
+List<string> names = people.ConvertAll(person => person.Name);
+```
+
+This is a shorthand way of passing the conversion logic directly into the `ConvertAll` method without explicitly creating a `Converter<Person, string>` instance.
+
+### Summary
+
+- **`System.Converter<TInput, TOutput>`** is a delegate that converts objects from one type (`TInput`) to another type (`TOutput`).
+- It is primarily used with collection conversion methods like `Array.ConvertAll` and `List<T>.ConvertAll`.
+- You can use either explicitly declared delegates or lambda expressions to define the conversion logic.
+
+It's especially useful when transforming collections, making it easier to convert data types between arrays and lists. Let me know if you'd like any further examples or clarifications!

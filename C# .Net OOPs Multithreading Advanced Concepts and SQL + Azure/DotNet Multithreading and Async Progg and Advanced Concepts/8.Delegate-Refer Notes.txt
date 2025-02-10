@@ -1,0 +1,72 @@
+Here's an example of a delegate with a return type in C#. This delegate will point to methods that take an integer as input and return an integer.
+
+### Example: Delegate with Return Type
+
+```csharp
+using System;
+
+namespace DelegateWithReturnTypeExample
+{
+    // Declare a delegate with an int return type and an int parameter
+    public delegate int MathOperation(int number);
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Instantiate the delegate, pointing to the Square method
+            MathOperation operation = Square;
+            int result = operation(5);
+            Console.WriteLine("Square of 5 is: " + result);
+
+            // Point the delegate to the Cube method
+            operation = Cube;
+            result = operation(3);
+            Console.WriteLine("Cube of 3 is: " + result);
+
+            // You can also chain multiple methods (but only the last method's return value will be captured)
+            operation += Square;
+            result = operation(2);
+            Console.WriteLine("Last operation on 2 results in: " + result);
+        }
+
+        // Method that matches the delegate signature, returns the square of the number
+        static int Square(int number)
+        {
+            return number * number;
+        }
+
+        // Method that matches the delegate signature, returns the cube of the number
+        static int Cube(int number)
+        {
+            return number * number * number;
+        }
+    }
+}
+```
+
+### Explanation:
+
+1. **Delegate Declaration**: `public delegate int MathOperation(int number);`
+   - This line declares a delegate named `MathOperation`. It can point to any method that takes an integer as a parameter and returns an integer.
+
+2. **Delegate Instantiation and Usage**:
+   - `MathOperation operation = Square;` assigns the `Square` method to the `operation` delegate.
+   - `int result = operation(5);` calls the `Square` method via the delegate with `5` as the input, and the result is stored in `result`.
+
+3. **Switching the Delegate Target**:
+   - `operation = Cube;` changes the method pointed to by the delegate to `Cube`.
+   - `result = operation(3);` now calls the `Cube` method.
+
+4. **Chaining Delegates**:
+   - `operation += Square;` adds the `Square` method to the delegate chain.
+   - When `operation(2)` is called, it first calls `Cube`, then `Square`, but only the result of `Square` is captured since it’s the last method in the chain.
+
+### Output:
+```
+Square of 5 is: 25
+Cube of 3 is: 27
+Last operation on 2 results in: 4
+```
+
+This example demonstrates a delegate that returns a value and shows how you can switch the method the delegate points to or chain multiple methods together.

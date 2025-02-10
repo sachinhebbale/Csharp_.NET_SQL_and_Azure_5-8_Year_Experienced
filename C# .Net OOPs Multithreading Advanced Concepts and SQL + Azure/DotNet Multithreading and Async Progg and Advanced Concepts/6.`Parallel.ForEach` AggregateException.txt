@@ -1,0 +1,47 @@
+In a `Parallel.ForEach`, handling exceptions is slightly different from a regular `foreach` loop because the iterations run in parallel on multiple threads. You need to aggregate exceptions from these threads and then handle them appropriately.
+
+Here’s an approach to handle exceptions in `Parallel.ForEach`:
+
+### Using `AggregateException`:
+
+1. Wrap the `Parallel.ForEach` loop in a `try-catch` block.
+2. In the `catch` block, catch an `AggregateException`, which contains all the exceptions thrown by the individual tasks in the loop.
+3. Use `AggregateException.Flatten()` to get a flat list of exceptions.
+4. Loop through each exception to process them individually.
+
+### Example:
+
+```csharp
+List<int> numbers = new List<int> { 1, 2, 3, 4, 5 };
+
+try
+{
+    Parallel.ForEach(numbers, number =>
+    {
+        // Simulate some work
+        Console.WriteLine($"Processing {number}");
+
+        // Simulate an exception for demonstration
+        if (number == 3)
+        {
+            throw new InvalidOperationException("An error occurred.");
+        }
+    });
+}
+catch (AggregateException aggEx)
+{
+    aggEx.Flatten().Handle(ex =>
+    {
+        // Handle each exception
+        Console.WriteLine($"Exception: {ex.Message}");
+        return true; // Mark the exception as handled
+    });
+}
+```
+
+### Key Points:
+- `AggregateException.Flatten()` consolidates exceptions from all the tasks.
+- `Handle()` method allows you to process each exception individually.
+- Returning `true` from `Handle()` marks the exception as handled.
+
+This way, all exceptions are caught and processed, and your parallel execution remains intact.

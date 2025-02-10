@@ -1,0 +1,126 @@
+In C#, the **Garbage Collector (GC)** is responsible for automatically managing the allocation and release of memory for managed objects. It tracks which objects are no longer being used by the application and reclaims the memory associated with them. However, it **does not** automatically manage unmanaged resources (e.g., file handles, database connections), which is why we use mechanisms like `IDisposable` to clean up such resources.
+
+### Key Points of Garbage Collection:
+- The GC runs automatically and non-deterministically (i.e., you can't predict when exactly it will run).
+- It only manages **managed objects**, leaving unmanaged resources (like file handles or database connections) to be cleaned up manually.
+- The GC tracks object references and collects objects that are no longer referenced (i.e., unreachable objects).
+
+---
+
+### `GC.SuppressFinalize` Method
+The `GC.SuppressFinalize()` method is used to **prevent** the Garbage Collector from calling an object's finalizer (destructor). This is useful when you have already cleaned up an object’s resources manually (via `Dispose()`), so there is no need for the finalizer to run.
+
+#### Why Suppress the Finalizer?
+- The finalizer is **expensive**: It takes more time for the GC to collect objects that have finalizers because it needs to place those objects in a special queue before cleaning them up.
+- If you have already manually released resources (for example, through `Dispose()`), there is no need for the GC to call the finalizer, so suppressing it can **improve performance**.
+
+#### Usage of `SuppressFinalize`:
+When implementing the `Dispose()` method in a class that has a finalizer, it is a good practice to call `GC.SuppressFinalize()` to prevent the finalizer from running after the resources have already been released.
+
+#### Example:
+```csharp
+public class ResourceHolder : IDisposable
+{
+    // Destructor (Finalizer) for unmanaged resource cleanup
+    ~ResourceHolder()
+    {
+        Dispose(false); // Finalizer cleans up unmanaged resources only
+    }
+
+    public void Dispose()
+    {
+        Dispose(true); // Explicit disposal
+
+        // Prevent the finalizer from running, since we've already cleaned up resources
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // Clean up managed resources here, if necessary
+        }
+
+        // Clean up unmanaged resources here
+    }
+}
+```
+In the code above, `GC.SuppressFinalize(this)` is called inside the `Dispose()` method to prevent the finalizer from being executed, as the resources have already been cleaned up.
+
+---
+
+### `GC.Collect()` Method
+The `GC.Collect()` method **forces** garbage collection to occur. This method is generally not recommended for regular use, as the Garbage Collector is highly optimized and automatically decides the best time to run based on the application's memory usage.
+
+#### When to Use `GC.Collect()`:
+- **Testing/Debugging**: It is useful for testing purposes when you want to simulate a garbage collection to verify resource cleanup or memory management behavior.
+- **Very Specific Scenarios**: In rare cases, such as when dealing with a lot of temporary objects in a short period, calling `GC.Collect()` might improve performance, but this should be done with caution and usually after profiling memory usage.
+
+#### Example of Forcing Garbage Collection:
+```csharp
+GC.Collect(); // Forces garbage collection for all generations
+```
+
+#### Parameters of `GC.Collect()`:
+- **`GC.Collect(int generation)`**: You can specify the generation of objects to collect. Higher generations represent older objects that have survived previous garbage collections.
+  - Generation 0: New, short-lived objects.
+  - Generation 1: Survived one GC cycle.
+  - Generation 2: Long-lived objects that have survived multiple GC cycles.
+  
+- **`GC.Collect(GCCollectionMode)`**: You can specify whether the collection should be forced immediately (`Forced`) or optimized for the runtime (`Optimized`).
+
+---
+
+### How `GC.SuppressFinalize()` and `GC.Collect()` Work Together:
+- **`GC.SuppressFinalize()`**: Prevents the Garbage Collector from calling the finalizer of an object when it's no longer referenced, which is useful when resources have been manually cleaned up.
+- **`GC.Collect()`**: Forces garbage collection to reclaim memory of unreachable objects, but should generally be avoided unless necessary.
+
+### Example Scenario:
+Let's say you have an object that holds both managed and unmanaged resources (e.g., a file handle and a database connection). Normally, when this object is no longer referenced, the GC will run its finalizer, which might release those resources. However, if you manually release them via `Dispose()`, calling `GC.SuppressFinalize()` ensures the GC won’t waste time running the finalizer. 
+
+```csharp
+class ResourceHolder : IDisposable
+{
+    ~ResourceHolder()
+    {
+        // This will be called by the GC if Dispose() is not called
+        Dispose(false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this); // Prevent finalizer call, as Dispose() already cleaned up resources
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // Clean up managed resources (if any)
+        }
+
+        // Clean up unmanaged resources (if any)
+    }
+}
+```
+
+If for some reason you need to manually force garbage collection (perhaps for testing), you could call `GC.Collect()`, but it’s generally not recommended in production code:
+
+```csharp
+GC.Collect(); // Force garbage collection
+```
+
+---
+
+### Summary:
+1. **`GC.SuppressFinalize(this)`**:
+   - Prevents the GC from calling the finalizer after resources have already been released via `Dispose()`.
+   - Helps improve performance by avoiding unnecessary finalization.
+
+2. **`GC.Collect()`**:
+   - Forces the Garbage Collector to reclaim memory for all unreferenced objects.
+   - Should only be used in special cases, as it can negatively impact performance.
+
+In regular usage, you should **rely on the Garbage Collector** for memory management and use **`IDisposable`** and **`GC.SuppressFinalize`** to handle unmanaged resources effectively.
