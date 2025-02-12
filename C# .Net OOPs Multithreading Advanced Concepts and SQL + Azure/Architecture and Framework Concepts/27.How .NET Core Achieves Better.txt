@@ -1,0 +1,91 @@
+### **How .NET Core Achieves Better Performance than .NET Framework**  
+.NET Core (now .NET 5 and later) is designed for **high performance, scalability, and efficiency**, making it significantly **faster** than the traditional .NET Framework. Here’s how:
+
+---
+
+## **1. High-Performance JIT Compilation (RyuJIT & Tiered Compilation)**
+### **🚀 RyuJIT (Faster Just-In-Time Compiler)**
+- .NET Core uses **RyuJIT**, which is **faster and more efficient** than the older **JIT compiler in .NET Framework**.  
+- **Generates optimized machine code**, reducing execution time.  
+
+### **🔥 Tiered Compilation (Adaptive Optimization)**
+- .NET Core **starts execution faster** with **Quick JIT (Tier 0)**.  
+- Once a method is frequently executed, it gets **recompiled with aggressive optimizations (Tier 1 JIT)**.  
+- **Benefit:** Balances **fast startup** and **optimized performance** over time.
+
+---
+
+## **2. Better Memory Management & Garbage Collection (GC)**
+### **🗑️ Server vs. Workstation GC**
+- .NET Core supports **Server GC**, which is optimized for **high-performance, multi-threaded applications**.  
+- **Low-Latency GC** mode reduces **pause times**, improving real-time app performance.  
+
+### **🌱 Improved GC Algorithms**
+- **Background GC:** Allows efficient collection **without stopping application execution**.  
+- **Configurable GC:** Developers can tune **GC behavior** using **environment variables**.  
+
+---
+
+## **3. Lightweight & Modular Architecture**
+### **📦 No Monolithic Overhead**
+- .NET Framework is **monolithic**—you must install the full framework even if you only need a small part of it.  
+- .NET Core is **modular**, allowing you to include only the required **NuGet packages**, **reducing memory usage** and **startup time**.  
+
+### **🚀 Self-Contained Applications**
+- .NET Core apps can be **self-contained**, bundling **only necessary dependencies**, reducing system-wide overhead.
+
+---
+
+## **4. Optimized Web Performance (ASP.NET Core)**
+### **⚡ Kestrel: High-Performance Web Server**
+- .NET Framework relies on **IIS**, which has **higher latency** and **overhead**.  
+- .NET Core includes **Kestrel**, a **lightweight**, **asynchronous**, **high-performance web server** optimized for speed.  
+
+### **🛠️ Asynchronous Processing by Default**
+- .NET Core **async/await model** is built-in and optimized for **non-blocking execution**.  
+- Reduces **CPU wait times**, making **web apps faster**.  
+
+### **🔗 Minimal Middleware Pipeline**
+- ASP.NET Core uses a **flexible middleware pipeline**, reducing unnecessary processing.  
+- Replaces the **complex HTTP modules & handlers** from ASP.NET Framework.
+
+---
+
+## **5. Improved Data Handling & Serialization**
+### **🚀 Faster JSON Serialization**
+- .NET Core 3+ introduced **System.Text.Json**, which is **faster** and **more efficient** than **Newtonsoft.Json** (which was default in .NET Framework).  
+
+### **📊 High-Performance Span<T> & Memory<T>**
+- **Span<T> & Memory<T>** allow **zero-cost slicing** of arrays without creating extra copies.  
+- **Reduces memory allocations**, speeding up performance.
+
+---
+
+## **6. Cross-Platform & Cloud Optimization**
+### **☁️ Optimized for Cloud & Containers**
+- .NET Core apps **run efficiently in Docker & Kubernetes**, making cloud deployments **faster** and **resource-efficient**.  
+- Smaller **container images**, **better scaling**, and **lower memory usage**.
+
+### **🚀 Single File Executables & ReadyToRun (R2R)**
+- **Native AOT (Ahead-of-Time Compilation)** improves startup time by **precompiling code**.  
+- **Single-file executables** reduce **deployment size and execution overhead**.
+
+---
+
+## **7. Performance Benchmarks**
+- **.NET Core is 5-10x faster than .NET Framework in many scenarios.**  
+- **ASP.NET Core handles 7M+ requests/sec** vs. **ASP.NET Framework’s 1M requests/sec** in benchmarks.
+
+---
+
+## **Conclusion: Why .NET Core is Faster**
+✅ **High-Performance JIT & Tiered Compilation**  
+✅ **Optimized Garbage Collection (GC)**  
+✅ **Lightweight, Modular Architecture**  
+✅ **Fast Web Server (Kestrel) & Minimal Middleware**  
+✅ **Efficient Data Handling & Serialization**  
+✅ **Cloud & Container Optimizations**  
+
+🔹 **.NET Core is designed for speed**, making it the **best choice for modern applications**! 🚀  
+
+Would you like details on any specific area? 😊
