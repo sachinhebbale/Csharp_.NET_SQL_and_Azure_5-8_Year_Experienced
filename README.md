@@ -10,6 +10,6 @@ It can contain errors(An err is Human) and I would request you to reach out to m
 Also, please create pull requests if you want to improve this repo.
 
 There is some hard copy material with me related to some commonly asked Design patterns, Low Level Design and High Level Design, if you complete going through the repo material, reach me out via Mailbox. I will be happy to share.
-Hard copy material includes some concepts learned from Scaler Academy course.
+Hard copy material includes some concepts learned from some courses.
 
 This is my first attempt here to help others in need.
