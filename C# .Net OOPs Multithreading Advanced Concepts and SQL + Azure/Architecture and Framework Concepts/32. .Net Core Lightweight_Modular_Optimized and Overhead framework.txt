@@ -1,0 +1,22 @@
+In .NET Core, the term **"lightweight"** generally refers to the framework's **small footprint, modular architecture, and optimized performance**. Here’s what makes .NET Core lightweight:  
+
+### 1. **Minimal Deployment Size**
+   - Unlike the full .NET Framework, .NET Core allows **self-contained applications** where only the necessary components are included.  
+   - This reduces the overall deployment size and makes applications easier to distribute.  
+
+### 2. **Modular & NuGet-based**
+   - .NET Core follows a **modular** approach where you include only the necessary libraries instead of a monolithic framework.  
+   - You can install and update components individually via **NuGet**, making applications more efficient.  
+
+### 3. **Cross-Platform Efficiency**
+   - Since .NET Core is designed to work on **Windows, Linux, and macOS**, it is optimized for performance across different environments.  
+   - This means fewer dependencies and better resource utilization.  
+
+### 4. **Optimized Performance**
+   - The **Kestrel web server** (used in ASP.NET Core) is highly optimized for performance, handling requests efficiently with minimal overhead.  
+   - .NET Core has a **garbage collector** designed for high throughput and low memory consumption.  
+
+### 5. **Container-Friendly**
+   - .NET Core works well in **Docker** and other containerized environments due to its small size and minimal dependencies.  
+
+In short, **"lightweight" in .NET Core means smaller, faster, and more efficient compared to the traditional .NET Framework**. 🚀
